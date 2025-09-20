@@ -118,7 +118,14 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
     if (onAddUserAd) {
       onAddUserAd(newAd);
     }
+    // Show success message or update UI
+    console.log('New ad created:', newAd);
   };
+
+  const handlePostAdClick = () => {
+    setShowPostAdModal(true);
+  };
+
   return (
     <div className="p2p-trading-container">
       {/* Header with Buy/Sell Tabs */}
@@ -186,7 +193,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
           <button className="amount-btn">Amount</button>
           <button 
             className="post-ad-btn"
-            onClick={() => setShowPostAdModal(true)}
+            onClick={handlePostAdClick}
           >
             + Post Ad
           </button>

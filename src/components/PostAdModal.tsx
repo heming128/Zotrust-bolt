@@ -63,8 +63,20 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
     }
   };
 
+  const handleClose = () => {
+    // Reset form when closing
+    setStep(1);
+    setAdType('buy');
+    setPriceType('fixed');
+    setPrice('87.06');
+    setAmount('1000');
+    setMinLimit('500');
+    setMaxLimit('5000');
+    onClose();
+  };
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={handleClose}>
       <div className="post-ad-modal" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="post-ad-header">
@@ -72,7 +84,7 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
             ←
           </button>
           <h2>Post Ad</h2>
-          <button className="close-btn" onClick={onClose}>
+          <button className="close-btn" onClick={handleClose}>
             ✕
           </button>
         </div>
@@ -113,8 +125,7 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
               <div className="ad-type-info">
                 <span className="check-icon">✅</span>
                 <span className="info-text">
-                  CORRECTED: You post a {adType.toUpperCase()} ad to {adType === 'buy' ? 'SELL' : 'BUY'} your 
-                  USDT to {adType === 'buy' ? 'buyers' : 'sellers'} who want to {adType === 'buy' ? 'purchase' : 'sell'} USDT
+                  You want to {adType.toUpperCase()} USDC {adType === 'buy' ? 'from sellers' : 'to buyers'}
                 </span>
               </div>
             </div>
@@ -126,8 +137,8 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
                 <div className="asset-info">
                   <div className="asset-icon">U</div>
                   <div className="asset-details">
-                    <span className="asset-name">USDT</span>
-                    <span className="asset-desc">Tether USD</span>
+                    <span className="asset-name">USDC</span>
+                    <span className="asset-desc">USD Coin</span>
                   </div>
                 </div>
                 <div className="asset-price">
@@ -154,40 +165,15 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
                 </div>
               </div>
             </div>
-
-            {/* Price Type Preview */}
-            <div className="form-section">
-              <h4>Price Type <span className="info-icon">ℹ️</span></h4>
-              <div className="price-type-preview">
-                <div className="price-type-indicator"></div>
-              </div>
-            </div>
           </div>
         )}
 
         {/* Step 2 Content */}
         {step === 2 && (
           <div className="step-content">
-            {/* Fiat Currency (continued from step 1) */}
-            <div className="form-section">
-              <div className="fiat-selector">
-                <div className="fiat-info">
-                  <div className="fiat-icon">🇮🇳</div>
-                  <div className="fiat-details">
-                    <span className="fiat-name">INR</span>
-                    <span className="fiat-desc">Indian Rupee</span>
-                  </div>
-                </div>
-                <div className="fiat-symbol">
-                  <span>₹</span>
-                  <span className="dropdown-arrow">▼</span>
-                </div>
-              </div>
-            </div>
-
             {/* Price Type Selection */}
             <div className="form-section">
-              <h4>Price Type <span className="info-icon">ℹ️</span></h4>
+              <h4>Price Type</h4>
               <div className="price-type-buttons">
                 <button 
                   className={`price-type-btn ${priceType === 'fixed' ? 'active' : ''}`}
@@ -220,46 +206,15 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
                     value={price} 
                     onChange={(e) => setPrice(e.target.value)}
                     className="price-value"
+                    placeholder="87.06"
                   />
                 </div>
                 
                 <div className="market-info">
                   <div className="highest-order">
                     <span className="trend-icon">📈</span>
-                    <span>Highest Order Price: ₹95.79</span>
+                    <span>Market Price: ₹87.06</span>
                   </div>
-                  <span className="market-diff">-9.1% below market</span>
-                </div>
-
-                <div className="quick-price-options">
-                  <h5>Quick Price Options</h5>
-                  <div className="price-option-buttons">
-                    <button 
-                      className="price-option-btn"
-                      onClick={() => setPrice('95.79')}
-                    >
-                      Market Price (₹95.79)
-                    </button>
-                    <button 
-                      className="price-option-btn"
-                      onClick={() => setPrice('96.75')}
-                    >
-                      +1% (₹96.75)
-                    </button>
-                    <button 
-                      className="price-option-btn"
-                      onClick={() => setPrice('97.71')}
-                    >
-                      +2% (₹97.71)
-                    </button>
-                  </div>
-                </div>
-
-                <div className="price-warning">
-                  <span className="warning-icon">⚠️</span>
-                  <span className="warning-text">
-                    Your price is significantly below market. This may attract sellers quickly.
-                  </span>
                 </div>
               </div>
             </div>
@@ -280,24 +235,26 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
 
             {/* Limits Section */}
             <div className="form-section">
-              <h4>Order Limits</h4>
+              <h4>Order Limits (₹)</h4>
               <div className="limits-section">
                 <div className="limit-input">
-                  <label>Minimum (₹)</label>
+                  <label>Minimum</label>
                   <input 
                     type="number" 
                     value={minLimit} 
                     onChange={(e) => setMinLimit(e.target.value)}
                     className="limit-input-field"
+                    placeholder="500"
                   />
                 </div>
                 <div className="limit-input">
-                  <label>Maximum (₹)</label>
+                  <label>Maximum</label>
                   <input 
                     type="number" 
                     value={maxLimit} 
                     onChange={(e) => setMaxLimit(e.target.value)}
                     className="limit-input-field"
+                    placeholder="5000"
                   />
                 </div>
               </div>
