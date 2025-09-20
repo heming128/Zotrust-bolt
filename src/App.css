@@ -1433,7 +1433,7 @@ body {
 }
 
 /* Traders List */
-.traders-list {
+.traders-grid {
   display: flex;
   flex-direction: column;
   gap: 1rem;

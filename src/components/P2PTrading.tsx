@@ -203,11 +203,11 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
       </div>
 
       {/* Traders List */}
-      <div className="traders-list">
+      <div className="traders-grid">
         {traders.map((trader) => (
           <div 
             key={trader.id} 
-            className="trader-card"
+            className="trader-ad-card"
             onClick={() => handleTraderClick(trader)}
           >
             <div className="trader-header">
@@ -227,18 +227,20 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
               </div>
             </div>
 
+            <div className="ad-details">
+              <div className="ad-type-badge">
+                <span className={`ad-type ${trader.adType}`}>
+                  {trader.adType === 'buy' ? '📈 Buying' : '📉 Selling'} {trader.token || 'USDC'}
+                </span>
+              </div>
+              
+              <div className="location-distance">
+                <span className="location">📍 {trader.location}</span>
+                <span className="distance">2.5 km away</span>
+              </div>
+            </div>
+
             <div className="trader-details">
-              <div className="branch-info">
-                <span className="branch-icon">🏢</span>
-                <span className="branch-text">{trader.branch}</span>
-              </div>
-              <div className="location-info">
-                <span className="location-text">{trader.location}</span>
-              </div>
-              <div className="network-info">
-                <span className="network-icon">📍</span>
-                <span className="network-text">Mumbai Branch Network</span>
-              </div>
             </div>
 
             <div className="trading-info">
@@ -250,6 +252,25 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
                 <div className="available-label">Available</div>
                 <div className="available-value">{trader.available.toFixed(2)} USDC</div>
               </div>
+            </div>
+
+            <div className="payment-methods">
+              <span className="payment-label">Payment:</span>
+              <div className="payment-tags">
+                {trader.paymentMethods.slice(0, 2).map((method, index) => (
+                  <span key={index} className="payment-tag">{method}</span>
+                ))}
+                {trader.paymentMethods.length > 2 && (
+                  <span className="payment-tag more">+{trader.paymentMethods.length - 2}</span>
+                )}
+              </div>
+            </div>
+
+            <div className="action-buttons">
+              <button className={`trade-btn ${trader.adType === 'buy' ? 'sell-to-buyer' : 'buy-from-seller'}`}>
+                {trader.adType === 'buy' ? `Sell ${trader.token || 'USDC'}` : `Buy ${trader.token || 'USDC'}`}
+              </button>
+              <button className="message-btn">💬</button>
             </div>
           </div>
         ))}
