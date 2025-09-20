@@ -38,9 +38,9 @@ export const useWeb3 = () => {
           const balance = await provider.getBalance(accounts[0]);
           
           setWeb3State({
-            account: accounts[0],
-            chainId: network.chainId,
-            balance: ethers.utils.formatEther(balance),
+            account: accounts[0].address,
+            chainId: Number(network.chainId),
+            balance: ethers.formatEther(balance),
             provider,
             isConnected: true,
             isConnecting: false,
@@ -66,15 +66,15 @@ export const useWeb3 = () => {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const account = await signer.getAddress();
       const network = await provider.getNetwork();
       const balance = await provider.getBalance(account);
 
       setWeb3State({
         account,
-        chainId: network.chainId,
-        balance: ethers.utils.formatEther(balance),
+        chainId: Number(network.chainId),
+        balance: ethers.formatEther(balance),
         provider,
         isConnected: true,
         isConnecting: false,
@@ -144,10 +144,10 @@ export const useWeb3 = () => {
     }
 
     try {
-      const signer = web3State.provider.getSigner();
+      const signer = await web3State.provider.getSigner();
       const tx = await signer.sendTransaction({
         to,
-        value: ethers.utils.parseEther(value),
+        value: ethers.parseEther(value),
       });
 
       return tx;
