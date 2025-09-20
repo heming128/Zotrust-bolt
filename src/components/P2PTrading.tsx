@@ -88,17 +88,6 @@ const P2PTrading: React.FC = () => {
     setShowTraderDetails(true);
   };
 
-  if (!isConnected) {
-    return (
-      <div className="p2p-trading-container">
-        <div className="p2p-not-connected">
-          <h3>🔒 Connect Wallet to Start P2P Trading</h3>
-          <p>Connect your wallet to access P2P trading features</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="p2p-trading-container">
       {/* Header with Buy/Sell Tabs */}
