@@ -28,7 +28,6 @@ const CityModal: React.FC<CityModalProps> = ({ isOpen, onClose, onSelectCity }) 
     'Rourkela', 'Nanded', 'Kolhapur', 'Ajmer', 'Akola', 'Gulbarga',
     'Jamnagar', 'Ujjain', 'Loni', 'Siliguri', 'Jhansi', 'Ulhasnagar',
     'Jammu', 'Sangli-Miraj & Kupwad', 'Mangalore', 'Erode', 'Belgaum', 'Ambattur',
-    'Tirunelveli', 'Malegaon', 'Gaya', 'Jalgaon', 'Udaipur', 'Maheshtala',
     
     // Additional Major Cities
     'Thiruvananthapuram', 'Kozhikode', 'Thrissur', 'Malappuram', 'Kollam',
