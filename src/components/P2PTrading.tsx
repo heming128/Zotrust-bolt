@@ -259,7 +259,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
       {showTraderDetails && selectedTrader && (
         <div className="modal-overlay" onClick={() => setShowTraderDetails(false)}>
           <div className="trader-details-modal" onClick={(e) => e.stopPropagation()}>
-            <div key={selectedTrader.id} className="trader-ad-card" onClick={() => handleTraderClick(selectedTrader)}>
+            <div key={selectedTrader.id} className="trader-ad-card">
               <div className="trader-header">
                 <div className="trader-info">
                   <div className="trader-name-section">
