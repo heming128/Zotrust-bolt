@@ -1,292 +1,283 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
 
+interface MarketData {
+  bestBuyPrice: number;
+  bestSellPrice: number;
+  volume24h: number;
+  activeOrders: number;
+}
+
 interface Trader {
   id: string;
-  address: string;
   name: string;
   rating: number;
   totalTrades: number;
-  city: string;
-  distance: number;
   isOnline: boolean;
-  tokens: {
-    symbol: string;
-    balance: number;
-    price: number;
-  }[];
-}
-
-interface Trade {
-  id: string;
-  type: 'buy' | 'sell';
-  token: string;
-  amount: number;
+  branch: string;
+  location: string;
   price: number;
-  trader: string;
-  city: string;
-  status: 'active' | 'pending' | 'completed';
+  available: number;
+  limit: {
+    min: number;
+    max: number;
+  };
+  paymentMethods: string[];
 }
 
 const P2PTrading: React.FC = () => {
-  const { account, isConnected, balance } = useWeb3();
-  const [selectedCity, setSelectedCity] = useState<string>('');
-  const [showCityModal, setShowCityModal] = useState(false);
-  const [nearbyTraders, setNearbyTraders] = useState<Trader[]>([]);
-  const [activeTrades, setActiveTrades] = useState<Trade[]>([]);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const { account, isConnected } = useWeb3();
+  const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
+  const [selectedToken, setSelectedToken] = useState('USDC');
+  const [selectedPayment, setSelectedPayment] = useState('Payment');
+  const [amount, setAmount] = useState('');
+  const [showTraderDetails, setShowTraderDetails] = useState(false);
+  const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
 
-  const cities = [
-    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata',
-    'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Kanpur', 'Nagpur'
-  ];
+  const marketData: MarketData = {
+    bestBuyPrice: 87.99,
+    bestSellPrice: 88.35,
+    volume24h: 10.02,
+    activeOrders: 1547
+  };
 
-  const mockTraders: Trader[] = [
+  const traders: Trader[] = [
     {
       id: '1',
-      address: '0x1234...5678',
-      name: 'CryptoKing',
-      rating: 4.8,
-      totalTrades: 156,
-      city: selectedCity,
-      distance: 2.3,
+      name: 'Priya Sharma',
+      rating: 4.9,
+      totalTrades: 180,
       isOnline: true,
-      tokens: [
-        { symbol: 'USDC', balance: 5000, price: 83.50 },
-        { symbol: 'ETH', balance: 2.5, price: 250000 }
-      ]
+      branch: 'Agent Branch',
+      location: 'TrustMaster — Bandra West | Andheri East',
+      price: 87.06,
+      available: 750.00,
+      limit: { min: 3500, max: 6000 },
+      paymentMethods: ['UPI Transfer', 'Bank Transfer']
     },
     {
       id: '2',
-      address: '0x9876...4321',
-      name: 'BlockchainBro',
-      rating: 4.6,
-      totalTrades: 89,
-      city: selectedCity,
-      distance: 1.8,
+      name: 'Rahul Kumar',
+      rating: 4.8,
+      totalTrades: 156,
       isOnline: true,
-      tokens: [
-        { symbol: 'USDC', balance: 3200, price: 83.45 },
-        { symbol: 'BTC', balance: 0.15, price: 4500000 }
-      ]
+      branch: 'Agent Branch',
+      location: 'CryptoHub — Mumbai Central | Dadar',
+      price: 87.15,
+      available: 1200.00,
+      limit: { min: 2000, max: 8000 },
+      paymentMethods: ['UPI Transfer', 'IMPS']
     },
     {
       id: '3',
-      address: '0x5555...7777',
-      name: 'DeFiDealer',
-      rating: 4.9,
+      name: 'Amit Singh',
+      rating: 4.7,
       totalTrades: 234,
-      city: selectedCity,
-      distance: 3.1,
       isOnline: false,
-      tokens: [
-        { symbol: 'USDC', balance: 8900, price: 83.48 }
-      ]
+      branch: 'Agent Branch',
+      location: 'BlockTrade — Powai | Vikhroli',
+      price: 87.25,
+      available: 950.00,
+      limit: { min: 5000, max: 10000 },
+      paymentMethods: ['Bank Transfer', 'UPI Transfer']
     }
   ];
 
-  useEffect(() => {
-    if (selectedCity) {
-      setNearbyTraders(mockTraders);
-    }
-  }, [selectedCity]);
-
-  const handleCitySelect = (city: string) => {
-    setSelectedCity(city);
-    setShowCityModal(false);
-    // In real app, fetch nearby traders based on city
-  };
-
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-        }
-      );
-    }
-  };
-
-  const startTrade = (trader: Trader, token: string, type: 'buy' | 'sell') => {
-    const newTrade: Trade = {
-      id: Date.now().toString(),
-      type,
-      token,
-      amount: 100, // Default amount
-      price: trader.tokens.find(t => t.symbol === token)?.price || 0,
-      trader: trader.name,
-      city: trader.city,
-      status: 'pending'
-    };
-    setActiveTrades([...activeTrades, newTrade]);
+  const handleTraderClick = (trader: Trader) => {
+    setSelectedTrader(trader);
+    setShowTraderDetails(true);
   };
 
   if (!isConnected) {
     return (
-      <div className="p2p-container">
+      <div className="p2p-trading-container">
         <div className="p2p-not-connected">
           <h3>🔒 Connect Wallet to Start P2P Trading</h3>
-          <p>Connect your wallet to find nearby traders and start P2P transactions</p>
+          <p>Connect your wallet to access P2P trading features</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p2p-container">
-      {/* Header */}
+    <div className="p2p-trading-container">
+      {/* Header with Buy/Sell Tabs */}
       <div className="p2p-header">
-        <h2>🤝 P2P Trading</h2>
-        <p>Find nearby traders in your city</p>
-      </div>
-
-      {/* USDC Balance Card */}
-      <div className="balance-card">
-        <div className="balance-header">
-          <span>USDC Balance</span>
-          <button className="refresh-btn">🔄</button>
-        </div>
-        <div className="balance-amount">
-          <span className="amount">$0.00</span>
-          <span className="usd-equivalent">≈ $0.00 USD</span>
-        </div>
-      </div>
-
-      {/* City Selection */}
-      {!selectedCity ? (
-        <div className="city-selector">
-          <div className="location-icon">📍</div>
-          <h3>Add Your City</h3>
-          <p>Please select your city to find nearby active traders in your area.</p>
+        <div className="trading-tabs">
           <button 
-            className="select-city-btn"
-            onClick={() => setShowCityModal(true)}
+            className={`tab-btn ${activeTab === 'buy' ? 'active buy' : ''}`}
+            onClick={() => setActiveTab('buy')}
           >
-            🏢 Select City
+            <span className="tab-icon">📈</span>
+            <div>
+              <div className="tab-title">Buy USDC</div>
+              <div className="tab-subtitle">Purchase crypto</div>
+            </div>
           </button>
           <button 
-            className="location-btn"
-            onClick={getUserLocation}
+            className={`tab-btn ${activeTab === 'sell' ? 'active sell' : ''}`}
+            onClick={() => setActiveTab('sell')}
           >
-            📍 Use Current Location
+            <span className="tab-icon">📉</span>
+            <div>
+              <div className="tab-title">Sell USDC</div>
+              <div className="tab-subtitle">Sell your crypto</div>
+            </div>
           </button>
         </div>
-      ) : (
-        <div className="selected-city">
-          <span>📍 {selectedCity}</span>
-          <button onClick={() => setSelectedCity('')}>Change</button>
-        </div>
-      )}
+      </div>
 
-      {/* Nearby Traders */}
-      {selectedCity && (
-        <div className="nearby-traders">
-          <h3>🎯 Nearby Traders in {selectedCity}</h3>
-          <div className="traders-list">
-            {nearbyTraders.map((trader) => (
-              <div key={trader.id} className="trader-card">
-                <div className="trader-header">
-                  <div className="trader-info">
-                    <span className="trader-name">{trader.name}</span>
-                    <div className="trader-stats">
-                      <span className="rating">⭐ {trader.rating}</span>
-                      <span className="trades">📊 {trader.totalTrades} trades</span>
-                      <span className="distance">📍 {trader.distance}km away</span>
-                    </div>
-                  </div>
-                  <div className={`status ${trader.isOnline ? 'online' : 'offline'}`}>
-                    {trader.isOnline ? '🟢 Online' : '🔴 Offline'}
-                  </div>
-                </div>
-                
-                <div className="trader-tokens">
-                  {trader.tokens.map((token) => (
-                    <div key={token.symbol} className="token-offer">
-                      <div className="token-info">
-                        <span className="token-symbol">{token.symbol}</span>
-                        <span className="token-balance">{token.balance.toLocaleString()}</span>
-                        <span className="token-price">₹{token.price.toLocaleString()}</span>
-                      </div>
-                      <div className="trade-buttons">
-                        <button 
-                          className="buy-btn"
-                          onClick={() => startTrade(trader, token.symbol, 'buy')}
-                          disabled={!trader.isOnline}
-                        >
-                          Buy
-                        </button>
-                        <button 
-                          className="sell-btn"
-                          onClick={() => startTrade(trader, token.symbol, 'sell')}
-                          disabled={!trader.isOnline}
-                        >
-                          Sell
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+      {/* Market Overview Card */}
+      <div className="market-overview-card">
+        <div className="market-header">
+          <span className="market-title">Market Overview</span>
+          <div className="token-selector">
+            <span>USDC</span>
+            <span className="dropdown-arrow">▼</span>
           </div>
         </div>
-      )}
-
-      {/* Active Trades */}
-      {activeTrades.length > 0 && (
-        <div className="active-trades">
-          <h3>🔄 Active Trades</h3>
-          <div className="trades-list">
-            {activeTrades.map((trade) => (
-              <div key={trade.id} className="trade-card">
-                <div className="trade-info">
-                  <span className={`trade-type ${trade.type}`}>
-                    {trade.type === 'buy' ? '🟢 BUY' : '🔴 SELL'}
-                  </span>
-                  <span className="trade-token">{trade.token}</span>
-                  <span className="trade-amount">{trade.amount}</span>
-                  <span className="trade-price">₹{trade.price.toLocaleString()}</span>
-                </div>
-                <div className="trade-status">
-                  <span className={`status ${trade.status}`}>
-                    {trade.status.toUpperCase()}
-                  </span>
-                </div>
-              </div>
-            ))}
+        
+        <div className="market-stats">
+          <div className="stat-item">
+            <div className="stat-label">📈 Best Buy Price</div>
+            <div className="stat-value buy-price">₹{marketData.bestBuyPrice}</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-label">📉 Best Sell Price</div>
+            <div className="stat-value sell-price">₹{marketData.bestSellPrice}</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-label">📊 24h Volume</div>
+            <div className="stat-value">₹{marketData.volume24h}Cr</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-label">📋 Active Orders</div>
+            <div className="stat-value">{marketData.activeOrders.toLocaleString()}</div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* City Selection Modal */}
-      {showCityModal && (
-        <div className="modal-overlay">
-          <div className="city-modal">
+      {/* Trading Controls */}
+      <div className="trading-controls">
+        <div className="control-buttons">
+          <button className="payment-btn">
+            {selectedPayment} <span className="dropdown-arrow">▼</span>
+          </button>
+          <button className="amount-btn">Amount</button>
+          <button className="post-ad-btn">+ Post Ad</button>
+        </div>
+        
+        <div className="buy-sell-buttons">
+          <button className={`trade-btn buy-btn ${activeTab === 'buy' ? 'active' : ''}`}>
+            Buy USDC
+          </button>
+          <button className={`trade-btn sell-btn ${activeTab === 'sell' ? 'active' : ''}`}>
+            Sell USDC
+          </button>
+        </div>
+      </div>
+
+      {/* Traders List */}
+      <div className="traders-list">
+        {traders.map((trader) => (
+          <div 
+            key={trader.id} 
+            className="trader-card"
+            onClick={() => handleTraderClick(trader)}
+          >
+            <div className="trader-header">
+              <div className="trader-info">
+                <div className="trader-name-section">
+                  <span className="trader-name">{trader.name}</span>
+                  <div className="trader-rating">
+                    <span className="star">⭐</span>
+                    <span className="rating-value">{trader.rating}</span>
+                    <span className="trades-count">({trader.totalTrades})</span>
+                  </div>
+                </div>
+                <div className={`online-status ${trader.isOnline ? 'online' : 'offline'}`}>
+                  <span className="status-dot"></span>
+                  {trader.isOnline ? 'Online' : 'Offline'}
+                </div>
+              </div>
+            </div>
+
+            <div className="trader-details">
+              <div className="branch-info">
+                <span className="branch-icon">🏢</span>
+                <span className="branch-text">{trader.branch}</span>
+              </div>
+              <div className="location-info">
+                <span className="location-text">{trader.location}</span>
+              </div>
+              <div className="network-info">
+                <span className="network-icon">📍</span>
+                <span className="network-text">Mumbai Branch Network</span>
+              </div>
+            </div>
+
+            <div className="trading-info">
+              <div className="price-section">
+                <div className="price-label">Price</div>
+                <div className="price-value">₹{trader.price.toFixed(2)}</div>
+              </div>
+              <div className="available-section">
+                <div className="available-label">Available</div>
+                <div className="available-value">{trader.available.toFixed(2)} USDC</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Trader Details Modal */}
+      {showTraderDetails && selectedTrader && (
+        <div className="modal-overlay" onClick={() => setShowTraderDetails(false)}>
+          <div className="trader-details-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Select Your City</h3>
+              <h3>{selectedTrader.name}</h3>
               <button 
                 className="close-btn"
-                onClick={() => setShowCityModal(false)}
+                onClick={() => setShowTraderDetails(false)}
               >
                 ✕
               </button>
             </div>
-            <div className="cities-grid">
-              {cities.map((city) => (
-                <button
-                  key={city}
-                  className="city-option"
-                  onClick={() => handleCitySelect(city)}
-                >
-                  📍 {city}
-                </button>
-              ))}
+            
+            <div className="modal-content">
+              <div className="trader-full-info">
+                <div className="rating-section">
+                  <span className="star">⭐</span>
+                  <span>{selectedTrader.rating} ({selectedTrader.totalTrades} trades)</span>
+                </div>
+                
+                <div className="location-section">
+                  <p><strong>Branch:</strong> {selectedTrader.branch}</p>
+                  <p><strong>Location:</strong> {selectedTrader.location}</p>
+                </div>
+                
+                <div className="trading-details">
+                  <div className="price-info">
+                    <span>Price: ₹{selectedTrader.price.toFixed(2)}</span>
+                    <span>Available: {selectedTrader.available.toFixed(2)} USDC</span>
+                  </div>
+                  
+                  <div className="limit-info">
+                    <span>Limit</span>
+                    <span>₹{selectedTrader.limit.min.toLocaleString()} - ₹{selectedTrader.limit.max.toLocaleString()}</span>
+                    <span>UPI Transfer</span>
+                  </div>
+                </div>
+                
+                <div className="action-buttons">
+                  <button className="message-btn">
+                    💬 Message
+                  </button>
+                  <button className="buy-usdc-btn">
+                    Buy USDC
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
