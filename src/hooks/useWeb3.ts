@@ -5,7 +5,7 @@ interface Web3State {
   account: string | null;
   chainId: number | null;
   balance: string | null;
-  provider: ethers.providers.Web3Provider | null;
+  provider: ethers.BrowserProvider | null;
   isConnected: boolean;
   isConnecting: boolean;
 }
@@ -30,7 +30,7 @@ export const useWeb3 = () => {
   const checkConnection = async () => {
     try {
       if (typeof window.ethereum !== 'undefined') {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await provider.listAccounts();
         
         if (accounts.length > 0) {
@@ -65,7 +65,7 @@ export const useWeb3 = () => {
       // Request account access
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = provider.getSigner();
       const account = await signer.getAddress();
       const network = await provider.getNetwork();
