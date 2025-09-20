@@ -1,7 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import WalletConnect from './components/WalletConnect';
-import DAppInterface from './components/DAppInterface';
+import Dashboard from './components/Dashboard';
 import P2PTrading from './components/P2PTrading';
 import BottomNavigation from './components/BottomNavigation';
 import { useWeb3 } from './hooks/useWeb3';
@@ -14,12 +13,7 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return (
-          <>
-            <WalletConnect />
-            {isConnected && <DAppInterface />}
-          </>
-        );
+        return <Dashboard />;
       case 'p2p':
         return <P2PTrading />;
       case 'trades':
@@ -30,7 +24,7 @@ function App() {
           </div>
         );
       case 'wallet':
-        return <WalletConnect />;
+        return <Dashboard />;
       case 'profile':
         return (
           <div className="profile-section">
@@ -39,12 +33,7 @@ function App() {
           </div>
         );
       default:
-        return (
-          <>
-            <WalletConnect />
-            {isConnected && <DAppInterface />}
-          </>
-        );
+        return <Dashboard />;
     }
   };
 
