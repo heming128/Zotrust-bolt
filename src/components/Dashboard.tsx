@@ -1,8 +1,24 @@
 import React from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
+import CityModal from './CityModal';
 
 const Dashboard: React.FC = () => {
   const { account, isConnected, balance, connectWallet, disconnectWallet } = useWeb3();
+  const [selectedCity, setSelectedCity] = React.useState<string | null>(null);
+  const [showCityModal, setShowCityModal] = React.useState(false);
+
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
+    localStorage.setItem('selectedCity', city);
+  };
+
+  // Load saved city on component mount
+  React.useEffect(() => {
+    const savedCity = localStorage.getItem('selectedCity');
+    if (savedCity) {
+      setSelectedCity(savedCity);
+    }
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -50,19 +66,42 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Add Your City Card */}
-      <div className="add-city-card">
-        <div className="location-pin">
-          <span>📍</span>
+      {!selectedCity ? (
+        <div className="add-city-card">
+          <div className="location-pin">
+            <span>📍</span>
+          </div>
+          <div className="city-content">
+            <h3>Add Your City</h3>
+            <p>Please select your city to find nearby active traders in your area.</p>
+          </div>
+          <button 
+            className="select-city-button"
+            onClick={() => setShowCityModal(true)}
+          >
+            <span>🏢</span>
+            Select City
+          </button>
         </div>
-        <div className="city-content">
-          <h3>Add Your City</h3>
-          <p>Please select your city to find nearby active traders in your area.</p>
+      ) : (
+        <div className="selected-city-card">
+          <div className="city-info">
+            <div className="city-icon">
+              <span>📍</span>
+            </div>
+            <div className="city-details">
+              <h3>Your City</h3>
+              <p>{selectedCity}</p>
+            </div>
+          </div>
+          <button 
+            className="change-city-button"
+            onClick={() => setShowCityModal(true)}
+          >
+            Change
+          </button>
         </div>
-        <button className="select-city-button">
-          <span>🏢</span>
-          Select City
-        </button>
-      </div>
+      )}
 
       {/* Welcome Section */}
       <div className="welcome-section">
@@ -94,6 +133,13 @@ const Dashboard: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* City Selection Modal */}
+      <CityModal 
+        isOpen={showCityModal}
+        onClose={() => setShowCityModal(false)}
+        onSelectCity={handleCitySelect}
+      />
     </div>
   );
 };
