@@ -320,6 +320,328 @@ body {
   transform: translateY(-1px);
 }
 
+/* Nearby Traders Section */
+.nearby-traders-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f1f5f9;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+  color: #1e293b;
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.traders-count {
+  background: #f0f9ff;
+  color: #0369a1;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid #e0f2fe;
+}
+
+.traders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.trader-ad-card {
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.trader-ad-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #4f46e5;
+}
+
+.trader-header {
+  margin-bottom: 1rem;
+}
+
+.trader-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.trader-name-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.trader-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.trader-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.star {
+  color: #fbbf24;
+}
+
+.rating-value {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.trades-count {
+  color: #64748b;
+}
+
+.online-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+}
+
+.online-status.online {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.online-status.offline {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ad-details {
+  margin-bottom: 1rem;
+}
+
+.ad-type-badge {
+  margin-bottom: 0.75rem;
+}
+
+.ad-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ad-type.buy {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.ad-type.sell {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.location-distance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.distance {
+  background: #f1f5f9;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.trading-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+
+.price-section, .available-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.price-label, .available-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.price-value, .available-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.payment-methods {
+  margin-bottom: 1rem;
+}
+
+.payment-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.payment-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.payment-tag {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+}
+
+.payment-tag.more {
+  background: #4f46e5;
+  color: white;
+  border-color: #4f46e5;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.trade-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.trade-btn.buy-from-seller {
+  background: #16a34a;
+  color: white;
+}
+
+.trade-btn.buy-from-seller:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.trade-btn.sell-to-buyer {
+  background: #dc2626;
+  color: white;
+}
+
+.trade-btn.sell-to-buyer:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.message-btn {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message-btn:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+/* Mobile Responsive for Nearby Traders */
+@media (max-width: 768px) {
+  .traders-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .trader-info {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .location-distance {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+}
+
 /* Welcome Section */
 .welcome-section {
   background: white;
