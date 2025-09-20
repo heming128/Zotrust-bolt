@@ -2,7 +2,7 @@ import React from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
 
 const Dashboard: React.FC = () => {
-  const { account, isConnected, balance, connectWallet } = useWeb3();
+  const { account, isConnected, balance, connectWallet, disconnectWallet } = useWeb3();
 
   return (
     <div className="dashboard-container">
@@ -29,9 +29,9 @@ const Dashboard: React.FC = () => {
             <h3>Wallet Connected</h3>
             <p>{account?.slice(0, 6)}...{account?.slice(-4)}</p>
           </div>
-          <div className="connected-indicator">
-            <span className="green-dot"></span>
-          </div>
+          <button className="disconnect-btn-small" onClick={disconnectWallet}>
+            Disconnect
+          </button>
         </div>
       )}
 
@@ -80,6 +80,18 @@ const Dashboard: React.FC = () => {
             <span>🔗</span>
             Connect Wallet
           </button>
+        )}
+        {isConnected && (
+          <div className="wallet-status">
+            <div className="connected-info">
+              <span className="status-icon">✅</span>
+              <span>Wallet Connected</span>
+            </div>
+            <button className="disconnect-wallet-btn" onClick={disconnectWallet}>
+              <span>🔌</span>
+              Disconnect Wallet
+            </button>
+          </div>
         )}
       </div>
     </div>

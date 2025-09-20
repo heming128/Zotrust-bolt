@@ -134,17 +134,21 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
-.connected-indicator {
-  display: flex;
-  align-items: center;
+.disconnect-btn-small {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.green-dot {
-  width: 12px;
-  height: 12px;
-  background: #22c55e;
-  border-radius: 50%;
-  border: 2px solid white;
+.disconnect-btn-small:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* USDC Balance Card */
@@ -315,6 +319,48 @@ body {
   background: #0891b2;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(6, 182, 212, 0.4);
+}
+
+/* Wallet Status in Welcome Section */
+.wallet-status {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.connected-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #10b981;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.status-icon {
+  font-size: 1.2rem;
+}
+
+.disconnect-wallet-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.disconnect-wallet-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
 }
 
 /* P2P Trading Styles */

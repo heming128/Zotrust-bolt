@@ -106,6 +106,9 @@ export const useWeb3 = () => {
       window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
       window.ethereum.removeListener('chainChanged', handleChainChanged);
     }
+    
+    // Clear any cached connection data
+    localStorage.removeItem('walletConnected');
   }, []);
 
   const handleAccountsChanged = (accounts: string[]) => {
