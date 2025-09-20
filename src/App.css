@@ -1,0 +1,417 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Styles */
+.app-header {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem 0;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.header-content h1 {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-content p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+}
+
+/* Main Content */
+.app-main {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Wallet Connect Styles */
+.wallet-connect {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.connect-container h3 {
+  color: #333;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.connect-container p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.connect-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.connect-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.connect-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.supported-wallets p {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.wallet-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.wallet-icons span {
+  background: #f8f9fa;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Wallet Connected Styles */
+.wallet-connected {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.wallet-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.account-info > div {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.address-label,
+.network-label,
+.balance-label {
+  font-weight: 600;
+  color: #555;
+  min-width: 70px;
+}
+
+.address-value,
+.network-value,
+.balance-value {
+  color: #333;
+  font-family: 'Courier New', monospace;
+}
+
+.disconnect-btn {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.disconnect-btn:hover {
+  background: #ff3742;
+  transform: translateY(-1px);
+}
+
+/* DApp Interface Styles */
+.dapp-interface {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.dapp-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dapp-header h2 {
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.dapp-header p {
+  color: #666;
+}
+
+.not-connected {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.not-connected h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+/* Network Switcher */
+.network-switcher {
+  margin-bottom: 2rem;
+}
+
+.network-switcher h4 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.network-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.network-buttons button {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.network-buttons button:hover {
+  background: #e9ecef;
+}
+
+.network-buttons button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+/* Transaction Form */
+.transaction-form {
+  margin-bottom: 2rem;
+}
+
+.transaction-form h4 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  color: #555;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.address-input,
+.amount-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.address-input:focus,
+.amount-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.send-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.send-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.send-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Messages */
+.error-message {
+  background: #ffe6e6;
+  color: #d63031;
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+  border-left: 4px solid #d63031;
+}
+
+.success-message {
+  background: #e6ffe6;
+  color: #00b894;
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+  border-left: 4px solid #00b894;
+}
+
+.success-message a {
+  color: #00b894;
+  text-decoration: underline;
+}
+
+/* DApp Features */
+.dapp-features {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin-top: 2rem;
+}
+
+.dapp-features h4 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.dapp-features ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
+}
+
+.dapp-features li {
+  color: #555;
+  font-weight: 500;
+}
+
+/* Footer */
+.app-footer {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.5rem 0;
+  text-align: center;
+}
+
+.footer-content p {
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.compatibility-badges {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-content h1 {
+    font-size: 2rem;
+  }
+  
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .wallet-info {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .network-buttons {
+    justify-content: center;
+  }
+  
+  .compatibility-badges {
+    flex-direction: column;
+    align-items: center;
+  }
+}
