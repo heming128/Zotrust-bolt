@@ -24,7 +24,12 @@ function App() {
           </div>
         );
       case 'wallet':
-        return <Dashboard />;
+        return (
+          <div className="wallet-section">
+            <h2>💳 Wallet</h2>
+            <p>Wallet features coming soon</p>
+          </div>
+        );
       case 'profile':
         return (
           <div className="profile-section">

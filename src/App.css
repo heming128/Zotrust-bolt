@@ -744,12 +744,22 @@ body {
 }
 
 /* Other sections */
-.trades-section, .profile-section {
+.trades-section, .profile-section, .wallet-section {
   background: white;
   padding: 2rem;
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.trades-section h2, .profile-section h2, .wallet-section h2 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.trades-section p, .profile-section p, .wallet-section p {
+  color: #666;
 }
 
 /* Wallet Connect Styles */
