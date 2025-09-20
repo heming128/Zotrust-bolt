@@ -263,17 +263,6 @@ const CityModal: React.FC<CityModalProps> = ({ isOpen, onClose, onSelectCity }) 
               </div>
             </>
           )}
-          <div className="cities-grid">
-            {indianCities.map((city) => (
-              <button
-                key={city}
-                className="city-option"
-                onClick={() => handleCitySelect(city)}
-              >
-                📍 {city}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
     </div>
