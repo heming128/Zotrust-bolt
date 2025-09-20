@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
+import PostAdModal from './PostAdModal';
 
 interface MarketData {
   bestBuyPrice: number;
@@ -33,6 +34,7 @@ const P2PTrading: React.FC = () => {
   const [amount, setAmount] = useState('');
   const [showTraderDetails, setShowTraderDetails] = useState(false);
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
+  const [showPostAdModal, setShowPostAdModal] = useState(false);
 
   const marketData: MarketData = {
     bestBuyPrice: 87.99,
@@ -153,7 +155,12 @@ const P2PTrading: React.FC = () => {
             {selectedPayment} <span className="dropdown-arrow">▼</span>
           </button>
           <button className="amount-btn">Amount</button>
-          <button className="post-ad-btn">+ Post Ad</button>
+          <button 
+            className="post-ad-btn"
+            onClick={() => setShowPostAdModal(true)}
+          >
+            + Post Ad
+          </button>
         </div>
         
         <div className="buy-sell-buttons">
@@ -271,6 +278,12 @@ const P2PTrading: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Post Ad Modal */}
+      <PostAdModal 
+        isOpen={showPostAdModal}
+        onClose={() => setShowPostAdModal(false)}
+      />
     </div>
   );
 };

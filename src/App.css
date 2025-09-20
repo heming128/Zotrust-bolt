@@ -363,6 +363,434 @@ body {
   box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
 }
 
+/* Post Ad Modal Styles */
+.post-ad-modal {
+  background: #1a1a1a;
+  color: white;
+  border-radius: 20px 20px 0 0;
+  padding: 0;
+  max-width: 400px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(100%);
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.post-ad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #333;
+}
+
+.post-ad-header h2 {
+  color: #4f46e5;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.back-btn, .close-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.back-btn:hover, .close-btn:hover {
+  color: white;
+}
+
+.progress-indicator {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #333;
+}
+
+.progress-text {
+  color: #888;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #4f46e5;
+  transition: width 0.3s ease;
+}
+
+.step-content {
+  padding: 1.5rem;
+}
+
+.ad-type-section {
+  margin-bottom: 2rem;
+}
+
+.ad-type-section h3 {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.ad-type-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ad-type-btn {
+  flex: 1;
+  background: #2a2a2a;
+  border: 2px solid #333;
+  color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.ad-type-btn.buy-btn.active {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.ad-type-btn.sell-btn.active {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+}
+
+.ad-type-info {
+  background: #2a2a2a;
+  padding: 1rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.check-icon {
+  color: #16a34a;
+  font-size: 1rem;
+  margin-top: 0.1rem;
+}
+
+.info-text {
+  color: #ccc;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+.form-section h4 {
+  color: white;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-icon {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.asset-selector, .fiat-selector {
+  background: white;
+  color: #333;
+  padding: 1rem;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.asset-info, .fiat-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.asset-icon {
+  width: 40px;
+  height: 40px;
+  background: #f59e0b;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.fiat-icon {
+  width: 40px;
+  height: 40px;
+  background: #f97316;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.asset-details, .fiat-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.asset-name, .fiat-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.asset-desc, .fiat-desc {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.asset-price, .fiat-symbol {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.price-type-preview {
+  height: 60px;
+  background: white;
+  border-radius: 10px;
+  position: relative;
+}
+
+.price-type-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  height: 8px;
+  background: #4f46e5;
+  border-radius: 0 0 10px 10px;
+}
+
+.price-type-buttons {
+  display: flex;
+  gap: 0;
+  background: white;
+  border-radius: 10px;
+  padding: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.price-type-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #666;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.price-type-btn.active {
+  background: #4f46e5;
+  color: white;
+}
+
+.lock-icon, .chart-icon {
+  font-size: 1rem;
+}
+
+.price-type-desc {
+  color: #888;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.price-input-section {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  color: #333;
+}
+
+.price-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.currency-symbol {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-right: 0.5rem;
+}
+
+.price-value {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  outline: none;
+  width: 100%;
+}
+
+.market-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.highest-order {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.trend-icon {
+  color: #16a34a;
+}
+
+.market-diff {
+  color: #16a34a;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.quick-price-options h5 {
+  color: #333;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.price-option-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.price-option-btn {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.price-option-btn:hover {
+  background: #e5e7eb;
+}
+
+.price-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: #fef3cd;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border-left: 4px solid #f59e0b;
+}
+
+.warning-icon {
+  color: #f59e0b;
+  font-size: 1rem;
+  margin-top: 0.1rem;
+}
+
+.warning-text {
+  color: #92400e;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.continue-btn {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.continue-btn:hover {
+  background: #4338ca;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .post-ad-modal {
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+  }
+}
+
 /* P2P Trading Styles */
 .p2p-trading-container {
   background: #1a1a1a;
