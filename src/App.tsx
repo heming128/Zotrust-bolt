@@ -6,16 +6,40 @@ import BottomNavigation from './components/BottomNavigation';
 import { useWeb3 } from './hooks/useWeb3';
 import './App.css';
 
+interface UserAd {
+  id: string;
+  name: string;
+  rating: number;
+  totalTrades: number;
+  isOnline: boolean;
+  branch: string;
+  location: string;
+  price: number;
+  available: number;
+  limit: {
+    min: number;
+    max: number;
+  };
+  paymentMethods: string[];
+  adType: 'buy' | 'sell';
+  token: string;
+}
+
 function App() {
   const { isConnected } = useWeb3();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [userAds, setUserAds] = useState<UserAd[]>([]);
+
+  const handleAddUserAd = (newAd: UserAd) => {
+    setUserAds(prev => [...prev, newAd]);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
         return <Dashboard />;
       case 'p2p':
-        return <P2PTrading />;
+        return <P2PTrading userAds={userAds} onAddUserAd={handleAddUserAd} />;
       case 'trades':
         return (
           <div className="trades-section">

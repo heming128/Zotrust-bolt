@@ -3,13 +3,17 @@ import React, { useState } from 'react';
 interface PostAdModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAdCreated: (ad: any) => void;
 }
 
-const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose }) => {
+const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated }) => {
   const [step, setStep] = useState(1);
   const [adType, setAdType] = useState<'buy' | 'sell'>('buy');
   const [priceType, setPriceType] = useState<'fixed' | 'market'>('fixed');
   const [price, setPrice] = useState('87.06');
+  const [amount, setAmount] = useState('1000');
+  const [minLimit, setMinLimit] = useState('500');
+  const [maxLimit, setMaxLimit] = useState('5000');
 
   if (!isOpen) return null;
 
@@ -17,8 +21,37 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose }) => {
     if (step === 1) {
       setStep(2);
     } else {
-      // Handle final submission
+      // Create the ad
+      const newAd = {
+        id: Date.now().toString(),
+        name: 'You', // Current user
+        rating: 5.0,
+        totalTrades: 0,
+        isOnline: true,
+        branch: 'Individual Trader',
+        location: 'Your Location',
+        price: parseFloat(price),
+        available: parseFloat(amount),
+        limit: { 
+          min: parseFloat(minLimit), 
+          max: parseFloat(maxLimit) 
+        },
+        paymentMethods: ['UPI Transfer', 'Bank Transfer'],
+        adType: adType, // 'buy' or 'sell'
+        token: 'USDC'
+      };
+      
+      onAdCreated(newAd);
       onClose();
+      
+      // Reset form
+      setStep(1);
+      setAdType('buy');
+      setPriceType('fixed');
+      setPrice('87.06');
+      setAmount('1000');
+      setMinLimit('500');
+      setMaxLimit('5000');
     }
   };
 
@@ -230,12 +263,51 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
             </div>
+
+            {/* Amount Section */}
+            <div className="form-section">
+              <h4>Amount (USDC)</h4>
+              <div className="amount-input-section">
+                <input 
+                  type="number" 
+                  value={amount} 
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="amount-input-field"
+                  placeholder="Enter amount"
+                />
+              </div>
+            </div>
+
+            {/* Limits Section */}
+            <div className="form-section">
+              <h4>Order Limits</h4>
+              <div className="limits-section">
+                <div className="limit-input">
+                  <label>Minimum (₹)</label>
+                  <input 
+                    type="number" 
+                    value={minLimit} 
+                    onChange={(e) => setMinLimit(e.target.value)}
+                    className="limit-input-field"
+                  />
+                </div>
+                <div className="limit-input">
+                  <label>Maximum (₹)</label>
+                  <input 
+                    type="number" 
+                    value={maxLimit} 
+                    onChange={(e) => setMaxLimit(e.target.value)}
+                    className="limit-input-field"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Continue Button */}
         <button className="continue-btn" onClick={handleContinue}>
-          Continue →
+          {step === 1 ? 'Continue →' : 'Create Ad'}
         </button>
       </div>
     </div>

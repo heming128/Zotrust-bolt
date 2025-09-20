@@ -1167,11 +1167,73 @@ body {
   background: #4338ca;
 }
 
+/* Additional Post Ad Modal Styles */
+.amount-input-section {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  color: #333;
+}
+
+.amount-input-field {
+  width: 100%;
+  background: none;
+  border: 2px solid #e5e7eb;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  outline: none;
+}
+
+.amount-input-field:focus {
+  border-color: #4f46e5;
+}
+
+.limits-section {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.limit-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.limit-input label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.limit-input-field {
+  background: none;
+  border: 2px solid #e5e7eb;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  outline: none;
+}
+
+.limit-input-field:focus {
+  border-color: #4f46e5;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .post-ad-modal {
     max-width: 100%;
     border-radius: 20px 20px 0 0;
+  }
+  
+  .limits-section {
+    flex-direction: column;
   }
 }
 

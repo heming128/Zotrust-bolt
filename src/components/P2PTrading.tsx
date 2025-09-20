@@ -24,9 +24,16 @@ interface Trader {
     max: number;
   };
   paymentMethods: string[];
+  adType?: 'buy' | 'sell';
+  token?: string;
 }
 
-const P2PTrading: React.FC = () => {
+interface P2PTradingProps {
+  userAds?: Trader[];
+  onAddUserAd?: (ad: Trader) => void;
+}
+
+const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) => {
   const { account, isConnected } = useWeb3();
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [selectedToken, setSelectedToken] = useState('USDC');
@@ -43,7 +50,7 @@ const P2PTrading: React.FC = () => {
     activeOrders: 1547
   };
 
-  const traders: Trader[] = [
+  const baseTraders: Trader[] = [
     {
       id: '1',
       name: 'Priya Sharma',
@@ -55,7 +62,9 @@ const P2PTrading: React.FC = () => {
       price: 87.06,
       available: 750.00,
       limit: { min: 3500, max: 6000 },
-      paymentMethods: ['UPI Transfer', 'Bank Transfer']
+      paymentMethods: ['UPI Transfer', 'Bank Transfer'],
+      adType: 'sell',
+      token: 'USDC'
     },
     {
       id: '2',
@@ -68,7 +77,9 @@ const P2PTrading: React.FC = () => {
       price: 87.15,
       available: 1200.00,
       limit: { min: 2000, max: 8000 },
-      paymentMethods: ['UPI Transfer', 'IMPS']
+      paymentMethods: ['UPI Transfer', 'IMPS'],
+      adType: 'sell',
+      token: 'USDC'
     },
     {
       id: '3',
@@ -81,15 +92,33 @@ const P2PTrading: React.FC = () => {
       price: 87.25,
       available: 950.00,
       limit: { min: 5000, max: 10000 },
-      paymentMethods: ['Bank Transfer', 'UPI Transfer']
+      paymentMethods: ['Bank Transfer', 'UPI Transfer'],
+      adType: 'buy',
+      token: 'USDC'
     }
   ];
+
+  // Filter traders based on active tab
+  // If user is on "buy" tab, show "sell" ads (users who want to sell)
+  // If user is on "sell" tab, show "buy" ads (users who want to buy)
+  const getFilteredTraders = () => {
+    const allTraders = [...baseTraders, ...userAds];
+    const targetAdType = activeTab === 'buy' ? 'sell' : 'buy';
+    return allTraders.filter(trader => trader.adType === targetAdType);
+  };
+
+  const traders = getFilteredTraders();
 
   const handleTraderClick = (trader: Trader) => {
     setSelectedTrader(trader);
     setShowTraderDetails(true);
   };
 
+  const handleAdCreated = (newAd: Trader) => {
+    if (onAddUserAd) {
+      onAddUserAd(newAd);
+    }
+  };
   return (
     <div className="p2p-trading-container">
       {/* Header with Buy/Sell Tabs */}
@@ -102,7 +131,7 @@ const P2PTrading: React.FC = () => {
             <span className="tab-icon">📈</span>
             <div>
               <div className="tab-title">Buy USDC</div>
-              <div className="tab-subtitle">Purchase crypto</div>
+              <div className="tab-subtitle">Find sellers</div>
             </div>
           </button>
           <button 
@@ -112,7 +141,7 @@ const P2PTrading: React.FC = () => {
             <span className="tab-icon">📉</span>
             <div>
               <div className="tab-title">Sell USDC</div>
-              <div className="tab-subtitle">Sell your crypto</div>
+              <div className="tab-subtitle">Find buyers</div>
             </div>
           </button>
         </div>
@@ -283,6 +312,7 @@ const P2PTrading: React.FC = () => {
       <PostAdModal 
         isOpen={showPostAdModal}
         onClose={() => setShowPostAdModal(false)}
+        onAdCreated={handleAdCreated}
       />
     </div>
   );
