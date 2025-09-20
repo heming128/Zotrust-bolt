@@ -1439,19 +1439,6 @@ body {
   gap: 1rem;
 }
 
-.trader-card {
-  background: white;
-  color: #333;
-  border-radius: 15px;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.trader-card:hover {
-  transform: translateY(-2px);
-}
 
 .trader-header {
   margin-bottom: 1rem;
