@@ -259,65 +259,67 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
       {showTraderDetails && selectedTrader && (
         <div className="modal-overlay" onClick={() => setShowTraderDetails(false)}>
           <div className="trader-details-modal" onClick={(e) => e.stopPropagation()}>
-        <div key={trader.id} className="trader-ad-card" onClick={() => handleTraderClick(trader)}>
-          <div className="trader-header">
-            <div className="trader-info">
-              <div className="trader-name-section">
-                <span className="trader-name">{trader.name}</span>
-                <div className="trader-rating">
-                  <span className="star">⭐</span>
-                  <span className="rating-value">{trader.rating}</span>
-                  <span className="trades-count">({trader.totalTrades})</span>
+            <div key={selectedTrader.id} className="trader-ad-card" onClick={() => handleTraderClick(selectedTrader)}>
+              <div className="trader-header">
+                <div className="trader-info">
+                  <div className="trader-name-section">
+                    <span className="trader-name">{selectedTrader.name}</span>
+                    <div className="trader-rating">
+                      <span className="star">⭐</span>
+                      <span className="rating-value">{selectedTrader.rating}</span>
+                      <span className="trades-count">({selectedTrader.totalTrades})</span>
+                    </div>
+                  </div>
+                  <div className={`online-status ${selectedTrader.isOnline ? 'online' : 'offline'}`}>
+                    <span className="status-dot"></span>
+                    {selectedTrader.isOnline ? 'Online' : 'Offline'}
+                  </div>
                 </div>
               </div>
-              <div className={`online-status ${trader.isOnline ? 'online' : 'offline'}`}>
-                <span className="status-dot"></span>
-                {trader.isOnline ? 'Online' : 'Offline'}
+
+              <div className="ad-details">
+                <div className="ad-type-badge">
+                  <span className={`ad-type ${selectedTrader.adType}`}>
+                    {selectedTrader.adType === 'buy' ? '📈 Buying' : '📉 Selling'} {selectedTrader.token || 'USDC'}
+                  </span>
+                </div>
+                
+                <div className="location-distance">
+                  <span className="location">📍 {selectedTrader.location}</span>
+                  <span className="distance">2.5 km away</span>
+                </div>
+              </div>
+
+              <div className="trading-info">
+                <div className="price-section">
+                  <div className="price-label">Price</div>
+                  <div className="price-value">₹{selectedTrader.price.toFixed(2)}</div>
+                </div>
+                <div className="available-section">
+                  <div className="available-label">Available</div>
+                  <div className="available-value">{selectedTrader.available.toFixed(2)} {selectedTrader.token || 'USDC'}</div>
+                </div>
+              </div>
+
+              <div className="payment-methods">
+                <span className="payment-label">Payment:</span>
+                <div className="payment-tags">
+                  {selectedTrader.paymentMethods.slice(0, 2).map((method, index) => (
+                    <span key={index} className="payment-tag">{method}</span>
+                  ))}
+                  {selectedTrader.paymentMethods.length > 2 && (
+                    <span className="payment-tag more">+{selectedTrader.paymentMethods.length - 2}</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="action-buttons">
+                <button className={`trade-btn ${selectedTrader.adType === 'buy' ? 'sell-to-buyer' : 'buy-from-seller'}`}>
+                  {selectedTrader.adType === 'buy' ? `Sell ${selectedTrader.token || 'USDC'}` : `Buy ${selectedTrader.token || 'USDC'}`}
+                </button>
+                <button className="message-btn">💬</button>
               </div>
             </div>
-          </div>
-
-          <div className="ad-details">
-            <div className="ad-type-badge">
-              <span className={`ad-type ${trader.adType}`}>
-                {trader.adType === 'buy' ? '📈 Buying' : '📉 Selling'} {trader.token || 'USDC'}
-              </span>
-            </div>
-            
-            <div className="location-distance">
-              <span className="location">📍 {trader.location}</span>
-              <span className="distance">2.5 km away</span>
-            </div>
-          </div>
-
-          <div className="trading-info">
-            <div className="price-section">
-              <div className="price-label">Price</div>
-              <div className="price-value">₹{trader.price.toFixed(2)}</div>
-            </div>
-            <div className="available-section">
-              <div className="available-label">Available</div>
-              <div className="available-value">{trader.available.toFixed(2)} {trader.token || 'USDC'}</div>
-            </div>
-          </div>
-
-          <div className="payment-methods">
-            <span className="payment-label">Payment:</span>
-            <div className="payment-tags">
-              {trader.paymentMethods.slice(0, 2).map((method, index) => (
-                <span key={index} className="payment-tag">{method}</span>
-              ))}
-              {trader.paymentMethods.length > 2 && (
-                <span className="payment-tag more">+{trader.paymentMethods.length - 2}</span>
-              )}
-            </div>
-          </div>
-
-          <div className="action-buttons">
-            <button className={`trade-btn ${trader.adType === 'buy' ? 'sell-to-buyer' : 'buy-from-seller'}`}>
-              {trader.adType === 'buy' ? `Sell ${trader.token || 'USDC'}` : `Buy ${trader.token || 'USDC'}`}
-            </button>
-            <button className="message-btn">💬</button>
           </div>
         </div>
       )}
