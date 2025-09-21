@@ -58,6 +58,9 @@ export const useWeb3 = () => {
 
   const [error, setError] = useState<string | null>(null);
 
+  // Safe window check
+  const isClient = typeof window !== 'undefined';
+
   // Fetch token balances
   const fetchTokenBalances = useCallback(async (provider: ethers.BrowserProvider, account: string, chainId: number) => {
     try {
@@ -107,14 +110,14 @@ export const useWeb3 = () => {
 
   // Check if wallet is already connected
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (isClient) {
       checkConnection();
     }
-  }, []);
+  }, [isClient]);
 
   const checkConnection = async () => {
     try {
-      if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
+      if (isClient && window.ethereum) {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await provider.listAccounts();
         
@@ -144,7 +147,7 @@ export const useWeb3 = () => {
   };
 
   const connectWallet = useCallback(async () => {
-    if (typeof window === 'undefined' || typeof window.ethereum === 'undefined') {
+    if (!isClient || !window.ethereum) {
       setError('Please install MetaMask or use TrustWallet DApp browser!');
       return;
     }
@@ -187,7 +190,7 @@ export const useWeb3 = () => {
       setError(err.message || 'Failed to connect wallet');
       setWeb3State(prev => ({ ...prev, isConnecting: false }));
     }
-  }, [fetchTokenBalances]);
+  }, [fetchTokenBalances, isClient]);
 
   const disconnectWallet = useCallback(() => {
     setWeb3State({
@@ -203,16 +206,16 @@ export const useWeb3 = () => {
     setError(null);
 
     // Remove listeners
-    if (typeof window !== 'undefined' && window.ethereum) {
+    if (isClient && window.ethereum) {
       window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
       window.ethereum.removeListener('chainChanged', handleChainChanged);
     }
     
     // Clear any cached connection data
-    if (typeof window !== 'undefined') {
+    if (isClient) {
       localStorage.removeItem('walletConnected');
     }
-  }, []);
+  }, [isClient]);
 
   const handleAccountsChanged = (accounts: string[]) => {
     if (accounts.length === 0) {
@@ -234,7 +237,7 @@ export const useWeb3 = () => {
   }, [web3State.provider, web3State.account, web3State.chainId, fetchTokenBalances]);
 
   const switchNetwork = async (chainId: number) => {
-    if (typeof window === 'undefined' || !window.ethereum) return;
+    if (!isClient || !window.ethereum) return;
 
     try {
       await window.ethereum.request({
