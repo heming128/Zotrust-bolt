@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
-import { useWeb3 } from './hooks/useWeb3';
 
-// Error Boundary Component
+// Simple Error Boundary
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error?: Error }
@@ -36,18 +35,12 @@ class ErrorBoundary extends React.Component<
           alignItems: 'center'
         }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚨</div>
-          <h1 style={{ color: '#dc2626', marginBottom: '1rem' }}>App Error Detected</h1>
+          <h1 style={{ color: '#dc2626', marginBottom: '1rem' }}>App Error</h1>
           <p style={{ color: '#666', marginBottom: '1rem' }}>
-            Error: {this.state.error?.message || 'Unknown error occurred'}
-          </p>
-          <p style={{ color: '#888', marginBottom: '2rem', fontSize: '0.9rem' }}>
-            Check browser console for more details
+            {this.state.error?.message || 'Unknown error'}
           </p>
           <button 
-            onClick={() => {
-              this.setState({ hasError: false, error: undefined });
-              window.location.reload();
-            }}
+            onClick={() => window.location.reload()}
             style={{
               padding: '1rem 2rem',
               background: '#4f46e5',
@@ -59,7 +52,7 @@ class ErrorBoundary extends React.Component<
               fontWeight: '600'
             }}
           >
-            Refresh App
+            Refresh Page
           </button>
         </div>
       );
@@ -69,32 +62,64 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-// Dashboard Component
-const Dashboard: React.FC = () => {
-  const { 
-    account, 
-    isConnected, 
-    balance, 
-    tokenBalances, 
-    isLoadingBalances,
-    connectWallet, 
-    disconnectWallet,
-    refreshTokenBalances,
-    error,
-    isConnecting,
-    chainId
-  } = useWeb3();
-  
+// Simple Dashboard Component
+const SimpleDashboard: React.FC = () => {
+  const [isConnected, setIsConnected] = useState(false);
+  const [account, setAccount] = useState<string | null>(null);
+  const [balance, setBalance] = useState('0.00');
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [showCityModal, setShowCityModal] = useState(false);
   const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
-  const [cities, setCities] = useState<string[]>([
-    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 
-    'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur',
-    'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam', 'Patna'
-  ]);
-  const [loadingCities, setLoadingCities] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const cities = [
+    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata',
+    'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur'
+  ];
+
+  const connectWallet = async () => {
+    try {
+      setIsConnecting(true);
+      
+      if (typeof window !== 'undefined' && window.ethereum) {
+        // Real Web3 connection
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        
+        if (accounts.length > 0) {
+          setAccount(accounts[0]);
+          setIsConnected(true);
+          setBalance('1,250.50'); // Mock balance for now
+        }
+      } else {
+        // Mock connection for testing
+        setAccount('0x1234...5678');
+        setIsConnected(true);
+        setBalance('1,250.50');
+      }
+    } catch (error) {
+      console.error('Connection error:', error);
+      alert('Failed to connect wallet');
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const disconnectWallet = () => {
+    setIsConnected(false);
+    setAccount(null);
+    setBalance('0.00');
+  };
+
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
+    setShowCityModal(false);
+    try {
+      localStorage.setItem('selectedCity', city);
+    } catch (error) {
+      console.error('Storage error:', error);
+    }
+  };
 
   // Load saved city on mount
   React.useEffect(() => {
@@ -104,45 +129,12 @@ const Dashboard: React.FC = () => {
         setSelectedCity(savedCity);
       }
     } catch (error) {
-      console.error('Error loading saved city:', error);
+      console.error('Storage error:', error);
     }
   }, []);
-  
-  const handleCitySelect = (city: string) => {
-    try {
-      setSelectedCity(city);
-      localStorage.setItem('selectedCity', city);
-      setShowCityModal(false);
-    } catch (error) {
-      console.error('Error saving city:', error);
-      setSelectedCity(city);
-      setShowCityModal(false);
-    }
-  };
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
-
-  const getNetworkName = (chainId: number | null) => {
-    switch (chainId) {
-      case 1: return 'Ethereum Mainnet';
-      case 56: return 'BSC Mainnet';
-      case 137: return 'Polygon';
-      case 5: return 'Goerli Testnet';
-      case 97: return 'BSC Testnet';
-      default: return `Chain ID: ${chainId}`;
-    }
-  };
-
-  // Filter cities based on search
-  const filteredCities = cities.filter(city =>
-    city.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleCityModalOpen = () => {
-    setShowCityModal(true);
-    setSearchTerm('');
   };
 
   const nearbyTraders = [
@@ -154,20 +146,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Error Display */}
-      {error && (
-        <div className="error-message" style={{ 
-          background: '#fee2e2', 
-          color: '#dc2626', 
-          padding: '1rem', 
-          borderRadius: '10px', 
-          marginBottom: '1rem',
-          border: '1px solid #fecaca'
-        }}>
-          ⚠️ {error}
-        </div>
-      )}
-      
       {/* Connect Wallet Card */}
       {!isConnected ? (
         <div className="connect-wallet-card">
@@ -193,7 +171,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="connect-content">
             <h3>Wallet Connected</h3>
-            <p>{formatAddress(account || '')}</p>
+            <p>{account ? formatAddress(account) : 'Connected'}</p>
           </div>
           <button className="disconnect-btn-small" onClick={disconnectWallet}>
             Disconnect
@@ -201,7 +179,7 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* USDC Balance Card */}
+      {/* Token Balance Card */}
       <div className="token-balance-card">
         <div className="balance-header">
           <div className="balance-title-section">
@@ -219,35 +197,18 @@ const Dashboard: React.FC = () => {
               </button>
             </div>
           </div>
-          <button 
-            className="refresh-button"
-            onClick={refreshTokenBalances}
-            disabled={isLoadingBalances}
-          >
-            <span>{isLoadingBalances ? '⏳' : '🔄'}</span>
+          <button className="refresh-button">
+            <span>🔄</span>
           </button>
         </div>
         <div className="balance-amount">
           <span className="main-amount">
-            {isLoadingBalances ? 'Loading...' : `${tokenBalances[selectedToken]} ${selectedToken}`}
+            {isConnected ? `${balance} ${selectedToken}` : `0.00 ${selectedToken}`}
           </span>
           <span className="usd-equivalent">
-            ≈ ${isLoadingBalances ? '0.00' : tokenBalances[selectedToken]} USD
+            ≈ ${isConnected ? balance : '0.00'} USD
           </span>
         </div>
-        {isConnected && chainId && (
-          <div style={{ 
-            marginTop: '1rem', 
-            fontSize: '0.9rem', 
-            opacity: 0.8,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <span>Network: {getNetworkName(chainId)}</span>
-            <span>ETH: {balance ? parseFloat(balance).toFixed(4) : '0.0000'}</span>
-          </div>
-        )}
       </div>
 
       {/* City Selection */}
@@ -262,19 +223,26 @@ const Dashboard: React.FC = () => {
           </div>
           <button 
             className="select-city-button"
-            onClick={() => {
-              setShowCityModal(true);
-              loadCities();
-            }}
+            onClick={() => setShowCityModal(true)}
           >
             <span>🏢</span>
             Select City
           </button>
+        </div>
+      ) : (
+        <div className="selected-city-card">
+          <div className="city-info">
+            <div className="city-icon">
+              <span>📍</span>
+            </div>
+            <div className="city-details">
+              <h3>Your City</h3>
+              <p>{selectedCity}</p>
             </div>
           </div>
           <button 
             className="change-city-button"
-            onClick={handleCityModalOpen}
+            onClick={() => setShowCityModal(true)}
           >
             Change
           </button>
@@ -312,7 +280,7 @@ const Dashboard: React.FC = () => {
                 <div className="ad-details">
                   <div className="ad-type-badge">
                     <span className="ad-type sell">
-                      📉 Selling USDC
+                      📉 Selling {selectedToken}
                     </span>
                   </div>
                   
@@ -329,7 +297,7 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="available-section">
                     <div className="available-label">Available</div>
-                    <div className="available-value">{trader.available.toFixed(2)} USDC</div>
+                    <div className="available-value">{trader.available.toFixed(2)} {selectedToken}</div>
                   </div>
                 </div>
 
@@ -343,7 +311,7 @@ const Dashboard: React.FC = () => {
 
                 <div className="action-buttons">
                   <button className="trade-btn buy-from-seller">
-                    Buy USDC
+                    Buy {selectedToken}
                   </button>
                   <button className="message-btn">💬</button>
                 </div>
@@ -382,55 +350,17 @@ const Dashboard: React.FC = () => {
                 Choose your city to find nearby traders in your area
               </p>
               
-              <div className="search-container">
-                <div className="search-input-wrapper">
-                  <span className="search-icon">🔍</span>
-                  <input
-                    type="text"
-                    placeholder="Search cities..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="city-search-input"
-                  />
-                  {searchTerm && (
-                    <button 
-                      className="clear-search-btn"
-                      onClick={() => setSearchTerm('')}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
+              <div className="cities-grid">
+                {cities.map((city) => (
+                  <button
+                    key={city}
+                    className="city-option"
+                    onClick={() => handleCitySelect(city)}
+                  >
+                    📍 {city}
+                  </button>
+                ))}
               </div>
-              
-              {filteredCities.length === 0 ? (
-                <div className="no-results">
-                  <span className="no-results-icon">🏙️</span>
-                  <p>No cities found matching "{searchTerm}"</p>
-                </div>
-              ) : (
-                <>
-                  {searchTerm && (
-                    <div className="results-count">
-                      <p className="search-results-text">
-                        Found {filteredCities.length} cities matching "{searchTerm}"
-                      </p>
-                    </div>
-                  )}
-                  
-                <div className="cities-grid">
-                  {filteredCities.map((city) => (
-                    <button
-                      key={city}
-                      className="city-option"
-                      onClick={() => handleCitySelect(city)}
-                    >
-                      📍 {city}
-                    </button>
-                  ))}
-                </div>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -439,275 +369,43 @@ const Dashboard: React.FC = () => {
   );
 };
 
-// Other Components
-const Trades: React.FC = () => {
-  return (
-    <div className="trades-container">
-      <div className="trades-not-connected">
-        <div className="not-connected-icon">📊</div>
-        <h3>Trading History</h3>
-        <p>Your trading history will appear here</p>
-        
-        <div style={{ marginTop: '2rem' }}>
-          <div className="trading-statistics-card">
-            <div className="stats-header">
-              <div className="stats-icon">📊</div>
-              <div className="stats-title">
-                <h3>Trading Statistics</h3>
-                <p>Your trading performance overview</p>
-              </div>
-            </div>
-            
-            <div className="stats-grid">
-              <div className="stat-item">
-                <div className="stat-icon">💰</div>
-                <div className="stat-content">
-                  <div className="stat-label">Total Volume</div>
-                  <div className="stat-value">$8,250</div>
-                </div>
-              </div>
-              
-              <div className="stat-item">
-                <div className="stat-icon">📈</div>
-                <div className="stat-content">
-                  <div className="stat-label">Success Rate</div>
-                  <div className="stat-value success-rate">83.3%</div>
-                </div>
-              </div>
-              
-              <div className="stat-item">
-                <div className="stat-icon">🔄</div>
-                <div className="stat-content">
-                  <div className="stat-label">Total Trades</div>
-                  <div className="stat-value">6</div>
-                </div>
-              </div>
-              
-              <div className="stat-item">
-                <div className="stat-icon">⭐</div>
-                <div className="stat-content">
-                  <div className="stat-label">Rating</div>
-                  <div className="stat-value">4.9</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+// Other Simple Components
+const SimpleTrades: React.FC = () => (
+  <div className="trades-container">
+    <div className="trades-not-connected">
+      <div className="not-connected-icon">📊</div>
+      <h3>Trading History</h3>
+      <p>Your trading history will appear here</p>
     </div>
-  );
-};
+  </div>
+);
 
-const P2PTrading: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
-  const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
-
-  return (
-    <div className="p2p-trading-container">
-      <div className="p2p-header">
-        <div className="trading-tabs">
-          <button 
-            className={`tab-btn ${activeTab === 'buy' ? 'active buy' : ''}`}
-            onClick={() => setActiveTab('buy')}
-          >
-            <span className="tab-icon">📈</span>
-            <div>
-              <div className="tab-title">Buy {selectedToken}</div>
-              <div className="tab-subtitle">Find sellers</div>
-            </div>
-          </button>
-          <button 
-            className={`tab-btn ${activeTab === 'sell' ? 'active sell' : ''}`}
-            onClick={() => setActiveTab('sell')}
-          >
-            <span className="tab-icon">📉</span>
-            <div>
-              <div className="tab-title">Sell {selectedToken}</div>
-              <div className="tab-subtitle">Find buyers</div>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <div className="market-overview-card">
-        <div className="market-header">
-          <span className="market-title">Market Overview</span>
-          <div className="token-selector">
-            <button 
-              className="token-selector-btn"
-              onClick={() => setSelectedToken(selectedToken === 'USDC' ? 'USDT' : 'USDC')}
-            >
-              <span className="token-icon">{selectedToken === 'USDC' ? '🔵' : '🟢'}</span>
-              <span>{selectedToken}</span>
-              <span className="dropdown-arrow">▼</span>
-            </button>
-          </div>
-        </div>
-        
-        <div className="market-stats">
-          <div className="stat-item">
-            <div className="stat-label">📈 Best Buy Price</div>
-            <div className="stat-value buy-price">₹87.99</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-label">📉 Best Sell Price</div>
-            <div className="stat-value sell-price">₹88.35</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-label">📊 24h Volume</div>
-            <div className="stat-value">₹10.02Cr</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-label">📋 Active Orders</div>
-            <div className="stat-value">1,547</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="trading-controls">
-        <div className="control-buttons">
-          <button className="payment-btn">
-            Payment <span className="dropdown-arrow">▼</span>
-          </button>
-          <button className="amount-btn">Amount</button>
-          <button className="post-ad-btn">+ Post Ad</button>
-        </div>
-      </div>
-
-      <div className="empty-traders">
-        <div className="empty-icon">🔍</div>
-        <h3>No {activeTab === 'buy' ? 'Sellers' : 'Buyers'} Found</h3>
-        <p>
-          {activeTab === 'buy' 
-            ? `No one is selling ${selectedToken} right now.` 
-            : `No one is buying ${selectedToken} right now.`
-          }
-        </p>
-        <button className="post-ad-btn">
-          + Post Your Ad
-        </button>
-      </div>
+const SimpleP2P: React.FC = () => (
+  <div className="p2p-trading-container">
+    <div className="empty-traders">
+      <div className="empty-icon">🤝</div>
+      <h3>P2P Trading</h3>
+      <p>P2P trading features coming soon</p>
     </div>
-  );
-};
+  </div>
+);
 
-const SimpleWallet: React.FC = () => {
-  return (
-    <div className="wallet-section">
-      <h2>💳 Wallet</h2>
-      <p>Advanced wallet features coming soon</p>
-      <div style={{ 
-        background: '#f9fafb', 
-        padding: '2rem', 
-        borderRadius: '15px',
-        textAlign: 'center',
-        marginTop: '1rem'
-      }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚀</div>
-        <h3>Coming Soon</h3>
-        <p>Advanced wallet management features will be available here</p>
-      </div>
+const SimpleWallet: React.FC = () => (
+  <div className="wallet-section">
+    <h2>💳 Wallet</h2>
+    <p>Advanced wallet features coming soon</p>
+  </div>
+);
+
+const SimpleProfile: React.FC = () => (
+  <div className="profile-container">
+    <div className="profile-not-connected">
+      <div className="not-connected-icon">👤</div>
+      <h3>Profile</h3>
+      <p>User profile features coming soon</p>
     </div>
-  );
-};
-
-const Profile: React.FC = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState({
-    name: 'John Doe',
-    mobile: '+91 9876543210',
-    isVerified: true
-  });
-
-  return (
-    <div className="profile-container">
-      <div className="profile-header">
-        <div className="profile-avatar">
-          <span className="avatar-icon">👤</span>
-        </div>
-        <div className="profile-info">
-          <h2>Your Profile</h2>
-          <p className="wallet-address">0x1234...5678</p>
-        </div>
-        {profile.isVerified && (
-          <div className="verification-badge">
-            <span className="verified-icon">✅</span>
-            <span>Verified</span>
-          </div>
-        )}
-      </div>
-
-      <div className="profile-form-card">
-        <div className="form-header">
-          <h3>Personal Information</h3>
-          <button className="edit-btn" onClick={() => setIsEditing(!isEditing)}>
-            <span>✏️</span>
-            {isEditing ? 'Save' : 'Edit'}
-          </button>
-        </div>
-
-        <div className="profile-form">
-          <div className="form-group">
-            <label>Full Name</label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={profile.name}
-                onChange={(e) => setProfile({...profile, name: e.target.value})}
-                className="profile-input"
-              />
-            ) : (
-              <div className="profile-display">{profile.name}</div>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Mobile Number</label>
-            {isEditing ? (
-              <input
-                type="tel"
-                value={profile.mobile}
-                onChange={(e) => setProfile({...profile, mobile: e.target.value})}
-                className="profile-input"
-              />
-            ) : (
-              <div className="profile-display">
-                {profile.mobile}
-                {profile.isVerified && (
-                  <div className="verification-status">
-                    <span className="verified-text">✅ Verified</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="trading-stats-card">
-        <h3>Trading Statistics</h3>
-        <div className="stats-grid">
-          <div className="stat-item">
-            <div className="stat-value">12</div>
-            <div className="stat-label">Total Trades</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-value">95%</div>
-            <div className="stat-label">Success Rate</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-value">3</div>
-            <div className="stat-label">Active Ads</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-value">Pro</div>
-            <div className="stat-label">Trader Level</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+  </div>
+);
 
 // Bottom Navigation
 const BottomNavigation: React.FC<{
@@ -746,17 +444,17 @@ function App() {
     try {
       switch (activeTab) {
         case 'dashboard':
-          return <Dashboard />;
+          return <SimpleDashboard />;
         case 'trades':
-          return <Trades />;
+          return <SimpleTrades />;
         case 'p2p':
-          return <P2PTrading />;
+          return <SimpleP2P />;
         case 'wallet':
           return <SimpleWallet />;
         case 'profile':
-          return <Profile />;
+          return <SimpleProfile />;
         default:
-          return <Dashboard />;
+          return <SimpleDashboard />;
       }
     } catch (error) {
       console.error('Error rendering content:', error);
@@ -769,8 +467,8 @@ function App() {
           margin: '1rem'
         }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
-          <h3>Content Loading Error</h3>
-          <p>Please try switching tabs or refresh the page</p>
+          <h3>Content Error</h3>
+          <p>Please try switching tabs</p>
         </div>
       );
     }
