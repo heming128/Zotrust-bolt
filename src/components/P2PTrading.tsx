@@ -146,11 +146,8 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   };
 
   const handleTokenSelect = (token: 'USDC' | 'USDT') => {
-    console.log('handleTokenSelect called with:', token);
-    console.log('Current selectedToken:', selectedToken);
     setSelectedToken(token);
     setShowTokenDropdown(false);
-    console.log('Token updated to:', token);
   };
 
   // Close dropdown when clicking outside
@@ -209,50 +206,50 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
             <span className="market-title">Market Overview</span>
             <span className={`overview-arrow ${showMarketStats ? 'open' : ''}`}>▼</span>
           </button>
-          <div className="token-selector">
+          <div className="token-selector" style={{ position: 'relative' }}>
             <button 
-              className="token-selector-btn"
+              type="button"
+              className="token-selector-btn" 
               onClick={(e) => {
                 e.stopPropagation();
-               console.log('Token selector clicked, current dropdown state:', showTokenDropdown);
                 setShowTokenDropdown(!showTokenDropdown);
               }}
             >
-            <span className="token-icon">{selectedToken === 'USDC' ? '🔵' : '🟢'}</span>
-            <span>{selectedToken}</span>
-            <span className="dropdown-arrow">▼</span>
+              <span className="token-icon">{selectedToken === 'USDC' ? '🔵' : '🟢'}</span>
+              <span>{selectedToken}</span>
+              <span className="dropdown-arrow">▼</span>
             </button>
 
             {showTokenDropdown && (
               <div className="token-dropdown">
-                <div 
+                <button
+                  type="button"
                   className={`token-option ${selectedToken === 'USDC' ? 'active' : ''}`}
-                 onClick={(e) => {
-                   e.stopPropagation();
-                   console.log('USDC clicked');
-                   handleTokenSelect('USDC');
-                 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleTokenSelect('USDC');
+                  }}
                 >
                   <span className="token-icon">🔵</span>
                   <div className="token-details">
                     <span className="token-name">USDC</span>
                     <span className="token-desc">USD Coin</span>
                   </div>
-                </div>
-                <div 
+                </button>
+                <button
+                  type="button"
                   className={`token-option ${selectedToken === 'USDT' ? 'active' : ''}`}
-                 onClick={(e) => {
-                   e.stopPropagation();
-                   console.log('USDT clicked');
-                   handleTokenSelect('USDT');
-                 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleTokenSelect('USDT');
+                  }}
                 >
                   <span className="token-icon">🟢</span>
                   <div className="token-details">
                     <span className="token-name">USDT</span>
                     <span className="token-desc">Tether USD</span>
                   </div>
-                </div>
+                </button>
               </div>
             )}
           </div>
