@@ -36,12 +36,13 @@ interface P2PTradingProps {
 const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) => {
   const { account, isConnected } = useWeb3();
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
-  const [selectedToken, setSelectedToken] = useState('USDC');
+  const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
   const [selectedPayment, setSelectedPayment] = useState('Payment');
   const [amount, setAmount] = useState('');
   const [showTraderDetails, setShowTraderDetails] = useState(false);
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
   const [showPostAdModal, setShowPostAdModal] = useState(false);
+  const [showTokenDropdown, setShowTokenDropdown] = useState(false);
 
   const marketData: MarketData = {
     bestBuyPrice: 87.99,
@@ -79,7 +80,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
       limit: { min: 2000, max: 8000 },
       paymentMethods: ['UPI Transfer', 'IMPS'],
       adType: 'sell',
-      token: 'USDC'
+      token: 'USDT'
     },
     {
       id: '3',
@@ -94,6 +95,21 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
       limit: { min: 5000, max: 10000 },
       paymentMethods: ['Bank Transfer', 'UPI Transfer'],
       adType: 'buy',
+      token: 'USDT'
+    },
+    {
+      id: '4',
+      name: 'Sneha Patel',
+      rating: 4.9,
+      totalTrades: 298,
+      isOnline: true,
+      branch: 'Agent Branch',
+      location: 'CryptoTrade — Andheri | Bandra',
+      price: 86.95,
+      available: 2000.00,
+      limit: { min: 1000, max: 15000 },
+      paymentMethods: ['UPI Transfer', 'PhonePe', 'GPay'],
+      adType: 'buy',
       token: 'USDC'
     }
   ];
@@ -104,7 +120,9 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const getFilteredTraders = () => {
     const allTraders = [...baseTraders, ...userAds];
     const targetAdType = activeTab === 'buy' ? 'sell' : 'buy';
-    return allTraders.filter(trader => trader.adType === targetAdType);
+    return allTraders.filter(trader => 
+      trader.adType === targetAdType && trader.token === selectedToken
+    );
   };
 
   const traders = getFilteredTraders();
@@ -126,6 +144,11 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
     setShowPostAdModal(true);
   };
 
+  const handleTokenSelect = (token: 'USDC' | 'USDT') => {
+    setSelectedToken(token);
+    setShowTokenDropdown(false);
+  };
+
   return (
     <div className="p2p-trading-container">
       {/* Header with Buy/Sell Tabs */}
@@ -137,7 +160,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
           >
             <span className="tab-icon">📈</span>
             <div>
-              <div className="tab-title">Buy USDC</div>
+              <div className="tab-title">Buy {selectedToken}</div>
               <div className="tab-subtitle">Find sellers</div>
             </div>
           </button>
@@ -147,7 +170,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
           >
             <span className="tab-icon">📉</span>
             <div>
-              <div className="tab-title">Sell USDC</div>
+              <div className="tab-title">Sell {selectedToken}</div>
               <div className="tab-subtitle">Find buyers</div>
             </div>
           </button>
@@ -158,9 +181,41 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
       <div className="market-overview-card">
         <div className="market-header">
           <span className="market-title">Market Overview</span>
-          <div className="token-selector">
-            <span>USDC</span>
+          <div className="token-selector" onClick={() => setShowTokenDropdown(!showTokenDropdown)}>
+            <span className="token-icon">{selectedToken === 'USDC' ? '🔵' : '🟢'}</span>
+            <span>{selectedToken}</span>
             <span className="dropdown-arrow">▼</span>
+            
+            {showTokenDropdown && (
+              <div className="token-dropdown">
+                <div 
+                  className={`token-option ${selectedToken === 'USDC' ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleTokenSelect('USDC');
+                  }}
+                >
+                  <span className="token-icon">🔵</span>
+                  <div className="token-details">
+                    <span className="token-name">USDC</span>
+                    <span className="token-desc">USD Coin</span>
+                  </div>
+                </div>
+                <div 
+                  className={`token-option ${selectedToken === 'USDT' ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleTokenSelect('USDT');
+                  }}
+                >
+                  <span className="token-icon">🟢</span>
+                  <div className="token-details">
+                    <span className="token-name">USDT</span>
+                    <span className="token-desc">Tether USD</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         
@@ -201,10 +256,10 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
         
         <div className="buy-sell-buttons">
           <button className={`trade-btn buy-btn ${activeTab === 'buy' ? 'active' : ''}`}>
-            Buy USDC
+            Buy {selectedToken}
           </button>
           <button className={`trade-btn sell-btn ${activeTab === 'sell' ? 'active' : ''}`}>
-            Sell USDC
+            Sell {selectedToken}
           </button>
         </div>
       </div>
@@ -257,7 +312,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
               </div>
               <div className="available-section">
                 <div className="available-label">Available</div>
-                <div className="available-value">{trader.available.toFixed(2)} USDC</div>
+                <div className="available-value">{trader.available.toFixed(2)} {trader.token || 'USDC'}</div>
               </div>
             </div>
 
@@ -282,6 +337,21 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
           </div>
         ))}
       </div>
+
+      {/* Empty State when no traders found */}
+      {traders.length === 0 && (
+        <div className="empty-traders">
+          <div className="empty-icon">🔍</div>
+          <h3>No {activeTab === 'buy' ? 'Sellers' : 'Buyers'} Found</h3>
+          <p>No active {selectedToken} {activeTab === 'buy' ? 'sell' : 'buy'} ads available right now.</p>
+          <button 
+            className="post-ad-btn"
+            onClick={handlePostAdClick}
+          >
+            + Post Your Ad
+          </button>
+        </div>
+      )}
 
       {/* Trader Details Modal */}
       {showTraderDetails && selectedTrader && (
@@ -357,6 +427,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
         isOpen={showPostAdModal}
         onClose={() => setShowPostAdModal(false)}
         onAdCreated={handleAdCreated}
+        selectedToken={selectedToken}
       />
     </div>
   );

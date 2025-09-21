@@ -5,9 +5,10 @@ interface PostAdModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdCreated: (ad: any) => void;
+  selectedToken?: 'USDC' | 'USDT';
 }
 
-const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated }) => {
+const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated, selectedToken = 'USDC' }) => {
   const { account } = useWeb3();
   const [step, setStep] = useState(1);
   const [adType, setAdType] = useState<'buy' | 'sell'>('buy');
@@ -44,7 +45,7 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
         },
         paymentMethods: ['UPI Transfer', 'Bank Transfer'],
         adType: adType, // 'buy' or 'sell'
-        token: 'USDC'
+        token: selectedToken
       };
       
       onAdCreated(newAd);
@@ -131,7 +132,7 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
               <div className="ad-type-info">
                 <span className="check-icon">✅</span>
                 <span className="info-text">
-                  You want to {adType.toUpperCase()} USDC {adType === 'buy' ? 'from sellers' : 'to buyers'}
+                  You want to {adType.toUpperCase()} {selectedToken} {adType === 'buy' ? 'from sellers' : 'to buyers'}
                 </span>
               </div>
             </div>
@@ -141,10 +142,10 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
               <h4>Asset</h4>
               <div className="asset-selector">
                 <div className="asset-info">
-                  <div className="asset-icon">U</div>
+                  <div className="asset-icon">{selectedToken === 'USDC' ? 'U' : 'T'}</div>
                   <div className="asset-details">
-                    <span className="asset-name">USDC</span>
-                    <span className="asset-desc">USD Coin</span>
+                    <span className="asset-name">{selectedToken}</span>
+                    <span className="asset-desc">{selectedToken === 'USDC' ? 'USD Coin' : 'Tether USD'}</span>
                   </div>
                 </div>
                 <div className="asset-price">
@@ -227,7 +228,7 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
 
             {/* Amount Section */}
             <div className="form-section">
-              <h4>Amount (USDC)</h4>
+              <h4>Amount ({selectedToken})</h4>
               <div className="amount-input-section">
                 <input 
                   type="number" 
