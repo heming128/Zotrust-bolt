@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
 import PostAdModal from './PostAdModal';
+import CityModal from './CityModal';
 
 interface MarketData {
   bestBuyPrice: number;
@@ -41,6 +42,8 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const [showPostAdModal, setShowPostAdModal] = useState(false);
   const [showTokenDropdown, setShowTokenDropdown] = useState(false);
   const [showMarketStats, setShowMarketStats] = useState(false);
+  const [showCityModal, setShowCityModal] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('Mumbai');
 
   const marketData: MarketData = {
     bestBuyPrice: 87.99,
@@ -137,6 +140,10 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
     if (onAddUserAd) {
       onAddUserAd(newAd);
     }
+  };
+
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
   };
 
   const handleTokenSelect = (token: 'USDC' | 'USDT') => {
