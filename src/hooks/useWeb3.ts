@@ -172,7 +172,7 @@ export const useWeb3 = () => {
 
   const connectWallet = useCallback(async () => {
     if (!isClient || !window.ethereum) {
-      setError('Please install MetaMask or use TrustWallet DApp browser!');
+      setError('No active wallet found');
       return;
     }
 
