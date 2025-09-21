@@ -38,10 +38,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const { account, isConnected } = useWeb3();
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
-  const [selectedPayment, setSelectedPayment] = useState('Payment');
   const [showPostAdModal, setShowPostAdModal] = useState(false);
-  const [showTokenDropdown, setShowTokenDropdown] = useState(false);
-  const [showMarketStats, setShowMarketStats] = useState(false);
   const [showCityModal, setShowCityModal] = useState(false);
   const [selectedCity, setSelectedCity] = useState('Mumbai');
 
@@ -146,264 +143,262 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
     setSelectedCity(city);
   };
 
-  const handleTokenSelect = (token: 'USDC' | 'USDT') => {
-    setSelectedToken(token);
-    setShowTokenDropdown(false);
-  };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (showTokenDropdown && !target.closest('.token-selector')) {
-        setShowTokenDropdown(false);
-      }
-    };
-
-    if (showTokenDropdown) {
-      document.addEventListener('click', handleClickOutside);
-    }
-    
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [showTokenDropdown]);
-
   return (
-    <div className="p2p-trading-container">
-      {/* Header with Buy/Sell Tabs */}
-      <div className="p2p-header">
-        <div className="trading-tabs">
-          <button 
-            className={`tab-btn ${activeTab === 'buy' ? 'active buy' : ''}`}
-            onClick={() => setActiveTab('buy')}
+    <div style={{ padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+      {/* Header */}
+      <div style={{ marginBottom: '20px' }}>
+        <h2 style={{ margin: '0 0 10px 0', color: '#333' }}>P2P Trading</h2>
+        <p style={{ margin: '0', color: '#666' }}>Trade directly with other users</p>
+      </div>
+
+      {/* Buy/Sell Tabs */}
+      <div style={{ 
+        display: 'flex', 
+        gap: '10px', 
+        marginBottom: '20px',
+        backgroundColor: '#fff',
+        padding: '10px',
+        borderRadius: '10px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+      }}>
+        <button 
+          onClick={() => setActiveTab('buy')}
+          style={{
+            flex: 1,
+            padding: '15px',
+            border: 'none',
+            borderRadius: '8px',
+            backgroundColor: activeTab === 'buy' ? '#4CAF50' : '#f0f0f0',
+            color: activeTab === 'buy' ? 'white' : '#333',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
+          📈 Buy {selectedToken}
+        </button>
+        <button 
+          onClick={() => setActiveTab('sell')}
+          style={{
+            flex: 1,
+            padding: '15px',
+            border: 'none',
+            borderRadius: '8px',
+            backgroundColor: activeTab === 'sell' ? '#f44336' : '#f0f0f0',
+            color: activeTab === 'sell' ? 'white' : '#333',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
+          📉 Sell {selectedToken}
+        </button>
+      </div>
+
+      {/* Token Selection */}
+      <div style={{ 
+        backgroundColor: '#fff',
+        padding: '15px',
+        borderRadius: '10px',
+        marginBottom: '20px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+      }}>
+        <h4 style={{ margin: '0 0 10px 0' }}>Select Token:</h4>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => setSelectedToken('USDC')}
+            style={{
+              padding: '10px 20px',
+              border: selectedToken === 'USDC' ? '2px solid #2196F3' : '1px solid #ddd',
+              borderRadius: '8px',
+              backgroundColor: selectedToken === 'USDC' ? '#e3f2fd' : 'white',
+              cursor: 'pointer'
+            }}
           >
-            <span className="tab-icon">📈</span>
-            <div>
-              <div className="tab-title">Buy {selectedToken}</div>
-              <div className="tab-subtitle">Find sellers</div>
-            </div>
+            🔵 USDC
           </button>
-          <button 
-            className={`tab-btn ${activeTab === 'sell' ? 'active sell' : ''}`}
-            onClick={() => setActiveTab('sell')}
+          <button
+            onClick={() => setSelectedToken('USDT')}
+            style={{
+              padding: '10px 20px',
+              border: selectedToken === 'USDT' ? '2px solid #4CAF50' : '1px solid #ddd',
+              borderRadius: '8px',
+              backgroundColor: selectedToken === 'USDT' ? '#e8f5e8' : 'white',
+              cursor: 'pointer'
+            }}
           >
-            <span className="tab-icon">📉</span>
-            <div>
-              <div className="tab-title">Sell {selectedToken}</div>
-              <div className="tab-subtitle">Find buyers</div>
-            </div>
+            🟢 USDT
           </button>
         </div>
       </div>
 
-      {/* Market Overview Card */}
-      <div className="market-overview-card">
-        <div className="market-header">
-          <button 
-            className="market-overview-btn"
-            onClick={() => setShowMarketStats(!showMarketStats)}
-          >
-            <span className="market-title">Market Overview</span>
-            <span className={`overview-arrow ${showMarketStats ? 'open' : ''}`}>▼</span>
-          </button>
-          <div className="token-selector" style={{ position: 'relative' }}>
-            <button 
-              type="button"
-              className="token-selector-btn" 
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowTokenDropdown(!showTokenDropdown);
-              }}
-            >
-              <span className="token-icon">{selectedToken === 'USDC' ? '🔵' : '🟢'}</span>
-              <span>{selectedToken}</span>
-              <span className="dropdown-arrow">▼</span>
-            </button>
+      {/* City Selection */}
+      <div style={{ 
+        backgroundColor: '#fff',
+        padding: '15px',
+        borderRadius: '10px',
+        marginBottom: '20px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+      }}>
+        <h4 style={{ margin: '0 0 10px 0' }}>Location:</h4>
+        <button
+          onClick={() => setShowCityModal(true)}
+          style={{
+            padding: '10px 20px',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+            backgroundColor: 'white',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px'
+          }}
+        >
+          📍 {selectedCity}
+        </button>
+      </div>
 
-            {showTokenDropdown && (
-              <div className="token-dropdown">
+      {/* Post Ad Button */}
+      <div style={{ marginBottom: '20px' }}>
+        <button
+          onClick={() => setShowPostAdModal(true)}
+          style={{
+            width: '100%',
+            padding: '15px',
+            border: 'none',
+            borderRadius: '10px',
+            backgroundColor: '#FF9800',
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: '16px',
+            cursor: 'pointer'
+          }}
+        >
+          + Post Your Ad
+        </button>
+      </div>
+
+      {/* Traders List */}
+      <div>
+        <h3 style={{ margin: '0 0 15px 0', color: '#333' }}>
+          Available {activeTab === 'buy' ? 'Sellers' : 'Buyers'} ({traders.length})
+        </h3>
+        
+        {traders.length === 0 ? (
+          <div style={{
+            backgroundColor: '#fff',
+            padding: '40px',
+            borderRadius: '10px',
+            textAlign: 'center',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '10px' }}>🔍</div>
+            <h3>No {activeTab === 'buy' ? 'Sellers' : 'Buyers'} Found</h3>
+            <p>No one is {activeTab === 'buy' ? 'selling' : 'buying'} {selectedToken} in {selectedCity} right now.</p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            {traders.map((trader) => (
+              <div key={trader.id} style={{
+                backgroundColor: '#fff',
+                padding: '20px',
+                borderRadius: '10px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+              }}>
+                {/* Trader Header */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  marginBottom: '15px'
+                }}>
+                  <div>
+                    <h4 style={{ margin: '0 0 5px 0' }}>{trader.name}</h4>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span>⭐ {trader.rating}</span>
+                      <span>({trader.totalTrades} trades)</span>
+                      <span style={{ 
+                        color: trader.isOnline ? '#4CAF50' : '#999',
+                        fontWeight: 'bold'
+                      }}>
+                        {trader.isOnline ? '🟢 Online' : '⚫ Offline'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Trading Info */}
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: '1fr 1fr', 
+                  gap: '15px',
+                  marginBottom: '15px'
+                }}>
+                  <div>
+                    <div style={{ color: '#666', fontSize: '14px' }}>Price</div>
+                    <div style={{ fontWeight: 'bold', fontSize: '18px' }}>₹{trader.price.toFixed(2)}</div>
+                  </div>
+                  <div>
+                    <div style={{ color: '#666', fontSize: '14px' }}>Available</div>
+                    <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{trader.available} {trader.token}</div>
+                  </div>
+                </div>
+
+                {/* Limits */}
+                <div style={{ marginBottom: '15px' }}>
+                  <div style={{ color: '#666', fontSize: '14px' }}>Limits</div>
+                  <div>₹{trader.limit.min.toLocaleString()} - ₹{trader.limit.max.toLocaleString()}</div>
+                </div>
+
+                {/* Payment Methods */}
+                <div style={{ marginBottom: '15px' }}>
+                  <div style={{ color: '#666', fontSize: '14px', marginBottom: '5px' }}>Payment Methods</div>
+                  <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                    {trader.paymentMethods.map((method, index) => (
+                      <span key={index} style={{
+                        backgroundColor: '#f0f0f0',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '12px'
+                      }}>
+                        {method}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Button */}
                 <button
-                  type="button"
-                  className={`token-option ${selectedToken === 'USDC' ? 'active' : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleTokenSelect('USDC');
+                  onClick={() => handleTradeClick(trader, trader.adType === 'buy' ? 'sell' : 'buy')}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    backgroundColor: trader.adType === 'buy' ? '#f44336' : '#4CAF50',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    fontSize: '16px'
                   }}
                 >
-                  <span className="token-icon">🔵</span>
-                  <div className="token-details">
-                    <span className="token-name">USDC</span>
-                    <span className="token-desc">USD Coin</span>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  className={`token-option ${selectedToken === 'USDT' ? 'active' : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleTokenSelect('USDT');
-                  }}
-                >
-                  <span className="token-icon">🟢</span>
-                  <div className="token-details">
-                    <span className="token-name">USDT</span>
-                    <span className="token-desc">Tether USD</span>
-                  </div>
+                  {trader.adType === 'buy' ? `Sell ${trader.token}` : `Buy ${trader.token}`}
                 </button>
               </div>
-            )}
-          </div>
-        </div>
-        
-        {showMarketStats && (
-          <div className="market-stats">
-            <div className="stat-item">
-              <div className="stat-label">📈 Best Buy Price</div>
-              <div className="stat-value buy-price">₹{marketData.bestBuyPrice}</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-label">📉 Best Sell Price</div>
-              <div className="stat-value sell-price">₹{marketData.bestSellPrice}</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-label">📊 24h Volume</div>
-              <div className="stat-value">₹{marketData.volume24h}Cr</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-label">📋 Active Orders</div>
-              <div className="stat-value">{marketData.activeOrders.toLocaleString()}</div>
-            </div>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Trading Controls */}
-      <div className="trading-controls">
-        <div className="control-buttons">
-          <button className="payment-btn">
-            {selectedPayment} <span className="dropdown-arrow">▼</span>
-          </button>
-          <button className="amount-btn">Amount</button>
-          <button 
-            className="post-ad-btn"
-            onClick={() => setShowPostAdModal(true)}
-          >
-            + Post Ad
-          </button>
-        </div>
-        
-        <div className="buy-sell-buttons">
-          <button 
-            className={`trade-btn buy-btn ${activeTab === 'buy' ? 'active' : ''}`}
-            onClick={() => setActiveTab('buy')}
-          >
-            Buy {selectedToken}
-          </button>
-          <button 
-            className={`trade-btn sell-btn ${activeTab === 'sell' ? 'active' : ''}`}
-            onClick={() => setActiveTab('sell')}
-          >
-            Sell {selectedToken}
-          </button>
-        </div>
-      </div>
-
-      {/* Traders List */}
-      <div className="traders-grid">
-        {traders.map((trader) => (
-          <div key={trader.id} className="trader-ad-card">
-            <div className="trader-header">
-              <div className="trader-info">
-                <div className="trader-name-section">
-                  <span className="trader-name">{trader.name}</span>
-                  <div className="trader-rating">
-                    <span className="star">⭐</span>
-                    <span className="rating-value">{trader.rating}</span>
-                    <span className="trades-count">({trader.totalTrades})</span>
-                  </div>
-                </div>
-                <div className={`online-status ${trader.isOnline ? 'online' : 'offline'}`}>
-                  <span className="status-dot"></span>
-                  {trader.isOnline ? 'Online' : 'Offline'}
-                </div>
-              </div>
-            </div>
-
-            <div className="ad-details">
-              <div className="ad-type-badge">
-                <span className={`ad-type ${trader.adType}`}>
-                  {trader.adType === 'buy' ? '📈 Buying' : '📉 Selling'} {trader.token || 'USDC'}
-                </span>
-              </div>
-              
-              <div className="location-distance">
-                <span className="location">📍 {trader.location}</span>
-                <span className="distance">2.5 km away</span>
-              </div>
-            </div>
-
-            <div className="trading-info">
-              <div className="price-section">
-                <div className="price-label">Price</div>
-                <div className="price-value">₹{trader.price.toFixed(2)}</div>
-              </div>
-              <div className="available-section">
-                <div className="available-label">Available</div>
-                <div className="available-value">{trader.available.toFixed(2)} {trader.token || 'USDC'}</div>
-              </div>
-            </div>
-
-            <div className="payment-methods">
-              <span className="payment-label">Payment:</span>
-              <div className="payment-tags">
-                {trader.paymentMethods.slice(0, 2).map((method, index) => (
-                  <span key={index} className="payment-tag">{method}</span>
-                ))}
-                {trader.paymentMethods.length > 2 && (
-                  <span className="payment-tag more">+{trader.paymentMethods.length - 2}</span>
-                )}
-              </div>
-            </div>
-
-            <div className="action-buttons">
-              <button 
-                className={`trade-btn ${trader.adType === 'buy' ? 'sell-to-buyer' : 'buy-from-seller'}`}
-                onClick={() => handleTradeClick(trader, trader.adType === 'buy' ? 'sell' : 'buy')}
-              >
-                {trader.adType === 'buy' ? `Sell ${trader.token || 'USDC'}` : `Buy ${trader.token || 'USDC'}`}
-              </button>
-              <button className="message-btn">💬</button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Empty State when no traders found */}
-      {traders.length === 0 && (
-        <div className="empty-traders">
-          <div className="empty-icon">🔍</div>
-          <h3>No {activeTab === 'buy' ? 'Sellers' : 'Buyers'} Found</h3>
-          <p>
-            {activeTab === 'buy' 
-              ? `No one is selling ${selectedToken} right now.` 
-              : `No one is buying ${selectedToken} right now.`
-            }
-          </p>
-          <button 
-            className="post-ad-btn"
-            onClick={() => setShowPostAdModal(true)}
-          >
-            + Post Your Ad
-          </button>
-        </div>
-      )}
-
-      {/* Post Ad Modal */}
+      {/* Modals */}
       <PostAdModal 
         isOpen={showPostAdModal}
         onClose={() => setShowPostAdModal(false)}
         onAdCreated={handleAdCreated}
+      />
+
+      <CityModal
+        isOpen={showCityModal}
+        onClose={() => setShowCityModal(false)}
+        onSelectCity={handleCitySelect}
       />
     </div>
   );
