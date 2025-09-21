@@ -1,9 +1,158 @@
 import React, { useState } from 'react';
-import { useWeb3 } from './hooks/useWeb3';
-import { useDatabase } from './hooks/useDatabase';
 import './App.css';
 
-// Dashboard Component with Real Web3 Integration
+// Error Boundary Component
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    console.error('Error caught by boundary:', error);
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('App Error Details:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ 
+          padding: '2rem', 
+          textAlign: 'center',
+          fontFamily: 'Arial, sans-serif',
+          background: '#fff',
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚨</div>
+          <h1 style={{ color: '#dc2626', marginBottom: '1rem' }}>App Error Detected</h1>
+          <p style={{ color: '#666', marginBottom: '1rem' }}>
+            Error: {this.state.error?.message || 'Unknown error occurred'}
+          </p>
+          <p style={{ color: '#888', marginBottom: '2rem', fontSize: '0.9rem' }}>
+            Check browser console for more details
+          </p>
+          <button 
+            onClick={() => {
+              this.setState({ hasError: false, error: undefined });
+              window.location.reload();
+            }}
+            style={{
+              padding: '1rem 2rem',
+              background: '#4f46e5',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '1rem',
+              fontWeight: '600'
+            }}
+          >
+            Refresh App
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Safe Web3 Hook with Error Handling
+const useWeb3 = () => {
+  const [state, setState] = useState({
+    account: null as string | null,
+    isConnected: false,
+    isConnecting: false,
+    balance: '0.00',
+    tokenBalances: { USDC: '0.00', USDT: '0.00' },
+    isLoadingBalances: false,
+    chainId: null as number | null,
+    error: null as string | null
+  });
+
+  const connectWallet = async () => {
+    try {
+      setState(prev => ({ ...prev, isConnecting: true, error: null }));
+      
+      // Check if window.ethereum exists
+      if (typeof window === 'undefined' || !window.ethereum) {
+        throw new Error('Please install MetaMask or use TrustWallet DApp browser!');
+      }
+
+      // Request account access
+      const accounts = await window.ethereum.request({ 
+        method: 'eth_requestAccounts' 
+      });
+      
+      if (accounts && accounts.length > 0) {
+        setState(prev => ({
+          ...prev,
+          account: accounts[0],
+          isConnected: true,
+          isConnecting: false,
+          balance: '0.125', // Mock balance for now
+          tokenBalances: { USDC: '1,250.00', USDT: '850.00' },
+          chainId: 1,
+          error: null
+        }));
+      }
+    } catch (error: any) {
+      console.error('Wallet connection error:', error);
+      setState(prev => ({
+        ...prev,
+        isConnecting: false,
+        error: error.message || 'Failed to connect wallet'
+      }));
+    }
+  };
+
+  const disconnectWallet = () => {
+    setState({
+      account: null,
+      isConnected: false,
+      isConnecting: false,
+      balance: '0.00',
+      tokenBalances: { USDC: '0.00', USDT: '0.00' },
+      isLoadingBalances: false,
+      chainId: null,
+      error: null
+    });
+  };
+
+  const refreshTokenBalances = () => {
+    setState(prev => ({ ...prev, isLoadingBalances: true }));
+    setTimeout(() => {
+      setState(prev => ({ 
+        ...prev, 
+        isLoadingBalances: false,
+        tokenBalances: { 
+          USDC: (Math.random() * 1000 + 500).toFixed(2), 
+          USDT: (Math.random() * 1000 + 300).toFixed(2) 
+        }
+      }));
+    }, 1000);
+  };
+
+  return {
+    ...state,
+    connectWallet,
+    disconnectWallet,
+    refreshTokenBalances
+  };
+};
+
+// Dashboard Component
 const Dashboard: React.FC = () => {
   const { 
     account, 
@@ -14,52 +163,52 @@ const Dashboard: React.FC = () => {
     connectWallet, 
     disconnectWallet,
     refreshTokenBalances,
-    error 
+    error,
+    isConnecting
   } = useWeb3();
   
-  const { getCities } = useDatabase();
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [showCityModal, setShowCityModal] = useState(false);
-  const [cities, setCities] = useState<string[]>([]);
-  const [loadingCities, setLoadingCities] = useState(false);
-
-  // Load cities from database
-  React.useEffect(() => {
-    if (showCityModal) {
-      loadCities();
-    }
-  }, [showCityModal]);
-
-  const loadCities = async () => {
-    try {
-      setLoadingCities(true);
-      const dbCities = await getCities();
-      setCities(dbCities.map(city => city.name));
-    } catch (error) {
-      // Fallback cities
-      setCities(['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 'Pune', 'Ahmedabad']);
-    } finally {
-      setLoadingCities(false);
-    }
-  };
-  
-  const handleCitySelect = (city: string) => {
-    setSelectedCity(city);
-    localStorage.setItem('selectedCity', city);
-    setShowCityModal(false);
-  };
 
   // Load saved city on mount
   React.useEffect(() => {
-    const savedCity = localStorage.getItem('selectedCity');
-    if (savedCity) {
-      setSelectedCity(savedCity);
+    try {
+      const savedCity = localStorage.getItem('selectedCity');
+      if (savedCity) {
+        setSelectedCity(savedCity);
+      }
+    } catch (error) {
+      console.error('Error loading saved city:', error);
     }
   }, []);
+  
+  const handleCitySelect = (city: string) => {
+    try {
+      setSelectedCity(city);
+      localStorage.setItem('selectedCity', city);
+      setShowCityModal(false);
+    } catch (error) {
+      console.error('Error saving city:', error);
+      setSelectedCity(city);
+      setShowCityModal(false);
+    }
+  };
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
+
+  const cities = [
+    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 
+    'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur'
+  ];
+
+  const nearbyTraders = [
+    { name: 'Priya Sharma', rating: 4.9, trades: 180, price: 87.06, available: 750 },
+    { name: 'Rahul Kumar', rating: 4.8, trades: 156, price: 87.15, available: 1200 },
+    { name: 'Amit Singh', rating: 4.7, trades: 234, price: 87.25, available: 950 },
+    { name: 'Sneha Patel', rating: 4.9, trades: 298, price: 86.95, available: 2000 }
+  ];
 
   return (
     <div className="dashboard-container">
@@ -87,8 +236,12 @@ const Dashboard: React.FC = () => {
             <h3>Connect Wallet</h3>
             <p>Connect to start trading</p>
           </div>
-          <button className="connect-btn-small" onClick={connectWallet}>
-            Connect
+          <button 
+            className="connect-btn-small" 
+            onClick={connectWallet}
+            disabled={isConnecting}
+          >
+            {isConnecting ? 'Connecting...' : 'Connect'}
           </button>
         </div>
       ) : (
@@ -177,12 +330,7 @@ const Dashboard: React.FC = () => {
           </div>
           
           <div className="traders-grid">
-            {[
-              { name: 'Priya Sharma', rating: 4.9, trades: 180, price: 87.06, available: 750 },
-              { name: 'Rahul Kumar', rating: 4.8, trades: 156, price: 87.15, available: 1200 },
-              { name: 'Amit Singh', rating: 4.7, trades: 234, price: 87.25, available: 950 },
-              { name: 'Sneha Patel', rating: 4.9, trades: 298, price: 86.95, available: 2000 }
-            ].map((trader, index) => (
+            {nearbyTraders.map((trader, index) => (
               <div key={index} className="trader-ad-card">
                 <div className="trader-header">
                   <div className="trader-info">
@@ -293,7 +441,7 @@ const Dashboard: React.FC = () => {
   );
 };
 
-// Simple Trades Component
+// Other Components
 const Trades: React.FC = () => {
   return (
     <div className="trades-container">
@@ -352,14 +500,12 @@ const Trades: React.FC = () => {
   );
 };
 
-// Simple P2P Component
 const P2PTrading: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
 
   return (
     <div className="p2p-trading-container">
-      {/* Header with Buy/Sell Tabs */}
       <div className="p2p-header">
         <div className="trading-tabs">
           <button 
@@ -385,7 +531,6 @@ const P2PTrading: React.FC = () => {
         </div>
       </div>
 
-      {/* Market Overview */}
       <div className="market-overview-card">
         <div className="market-header">
           <span className="market-title">Market Overview</span>
@@ -421,7 +566,6 @@ const P2PTrading: React.FC = () => {
         </div>
       </div>
 
-      {/* Trading Controls */}
       <div className="trading-controls">
         <div className="control-buttons">
           <button className="payment-btn">
@@ -432,7 +576,6 @@ const P2PTrading: React.FC = () => {
         </div>
       </div>
 
-      {/* Empty State */}
       <div className="empty-traders">
         <div className="empty-icon">🔍</div>
         <h3>No {activeTab === 'buy' ? 'Sellers' : 'Buyers'} Found</h3>
@@ -450,7 +593,6 @@ const P2PTrading: React.FC = () => {
   );
 };
 
-// Simple Wallet Component
 const SimpleWallet: React.FC = () => {
   return (
     <div className="wallet-section">
@@ -471,7 +613,6 @@ const SimpleWallet: React.FC = () => {
   );
 };
 
-// Simple Profile Component
 const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
@@ -482,7 +623,6 @@ const Profile: React.FC = () => {
 
   return (
     <div className="profile-container">
-      {/* Profile Header */}
       <div className="profile-header">
         <div className="profile-avatar">
           <span className="avatar-icon">👤</span>
@@ -499,7 +639,6 @@ const Profile: React.FC = () => {
         )}
       </div>
 
-      {/* Profile Form */}
       <div className="profile-form-card">
         <div className="form-header">
           <h3>Personal Information</h3>
@@ -547,7 +686,6 @@ const Profile: React.FC = () => {
         </div>
       </div>
 
-      {/* Trading Stats */}
       <div className="trading-stats-card">
         <h3>Trading Statistics</h3>
         <div className="stats-grid">
@@ -573,7 +711,7 @@ const Profile: React.FC = () => {
   );
 };
 
-// Bottom Navigation Component
+// Bottom Navigation
 const BottomNavigation: React.FC<{
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -601,69 +739,6 @@ const BottomNavigation: React.FC<{
     </div>
   );
 };
-
-// Error Boundary Component
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean; error?: Error }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('App Error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ 
-          padding: '2rem', 
-          textAlign: 'center',
-          fontFamily: 'Arial, sans-serif',
-          background: '#fff',
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚨</div>
-          <h1 style={{ color: '#dc2626', marginBottom: '1rem' }}>Something went wrong</h1>
-          <p style={{ color: '#666', marginBottom: '2rem' }}>
-            {this.state.error?.message || 'An unexpected error occurred'}
-          </p>
-          <button 
-            onClick={() => {
-              this.setState({ hasError: false, error: undefined });
-              window.location.reload();
-            }}
-            style={{
-              padding: '1rem 2rem',
-              background: '#4f46e5',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              fontWeight: '600'
-            }}
-          >
-            Refresh Page
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
 
 // Main App Component
 function App() {
