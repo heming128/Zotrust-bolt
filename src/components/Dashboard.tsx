@@ -416,6 +416,29 @@ const Dashboard: React.FC = () => {
         onClose={() => setShowCityModal(false)}
         onSelectCity={handleCitySelect}
       />
+
+      {/* Four Action Buttons */}
+      <div className="dashboard-action-buttons">
+        <button className="dashboard-action-btn p2p-btn">
+          <div className="btn-icon">🤝</div>
+          <span className="btn-text">P2P</span>
+        </button>
+        
+        <button className="dashboard-action-btn trades-btn">
+          <div className="btn-icon">📊</div>
+          <span className="btn-text">Trades</span>
+        </button>
+        
+        <button className="dashboard-action-btn profile-btn">
+          <div className="btn-icon">👤</div>
+          <span className="btn-text">Profile</span>
+        </button>
+        
+        <button className="dashboard-action-btn request-btn">
+          <div className="btn-icon">📝</div>
+          <span className="btn-text">Request</span>
+        </button>
+      </div>
     </div>
   );
 };
