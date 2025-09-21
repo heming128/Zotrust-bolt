@@ -260,6 +260,13 @@ const Dashboard: React.FC = () => {
               }}>
                 Welcome to
               </h3>
+              <p style={{
+                margin: '4px 0 0 0',
+                fontSize: '14px',
+                color: '#666'
+              }}>
+                {isConnecting ? 'Please check your wallet' : 'Connect to start trading'}
+              </p>
             </div>
           </div>
           
