@@ -61,6 +61,8 @@ const Dashboard: React.FC = () => {
           gap: '15px'
         }}>
           <div style={{
+            cursor: 'pointer',
+            transition: 'transform 0.2s ease',
             width: '48px',
             height: '48px',
             backgroundColor: 'rgba(255,255,255,0.2)',
@@ -78,6 +80,30 @@ const Dashboard: React.FC = () => {
             </h3>
             <p style={{ margin: 0, fontSize: '14px', opacity: 0.9 }}>
               Connect to start trading
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Error Display */}
+      {error && (
+        <div style={{
+          backgroundColor: '#fee2e2',
+          borderRadius: '12px',
+          padding: '16px',
+          marginBottom: '20px',
+          border: '1px solid #fecaca',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <span style={{ fontSize: '20px' }}>⚠️</span>
+          <div>
+            <h4 style={{ margin: '0 0 4px 0', color: '#dc2626', fontSize: '14px', fontWeight: '600' }}>
+              Connection Error
+            </h4>
+            <p style={{ margin: 0, color: '#991b1b', fontSize: '13px' }}>
+              {error}
             </p>
           </div>
         </div>
@@ -195,6 +221,15 @@ const Dashboard: React.FC = () => {
             gap: '8px',
             margin: '0 auto'
           }}
+          onMouseDown={(e) => {
+            e.currentTarget.style.transform = 'scale(0.98)';
+          }}
+          onMouseUp={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
         >
           🏢 Select City
         </button>
@@ -210,7 +245,7 @@ const Dashboard: React.FC = () => {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Background decoration */}
+              {isConnecting ? 'Connecting...' : 'Connect Wallet'}
         <div style={{
           position: 'absolute',
           top: '-20px',
@@ -249,9 +284,19 @@ const Dashboard: React.FC = () => {
                 color: '#1a1a1a'
               }}>
                 Welcome to
-              </h3>
+              {isConnecting ? 'Please check your wallet' : 'Connect to start trading'}
             </div>
           </div>
+          {isConnecting && (
+            <div style={{
+              width: '20px',
+              height: '20px',
+              border: '2px solid rgba(255,255,255,0.3)',
+              borderTop: '2px solid white',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}></div>
+          )}
           
           <h2 style={{
             margin: '0 0 16px 0',

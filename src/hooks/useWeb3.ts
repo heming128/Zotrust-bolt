@@ -71,6 +71,19 @@ export const useWeb3 = () => {
 
   const [error, setError] = useState<string | null>(null);
 
+  // Check if we're in a Web3 environment
+  const isWeb3Available = useCallback(() => {
+    if (!isClient) return false;
+    
+    // Check for various wallet providers
+    return !!(
+      window.ethereum || 
+      (window as any).web3 || 
+      (window as any).trustWallet ||
+      (window as any).TrustWallet
+    );
+  }, [isClient]);
+
   // Fetch token balances
   const fetchTokenBalances = useCallback(async (provider: ethers.BrowserProvider, account: string, chainId: number) => {
     if (!isClient) return;
@@ -171,8 +184,13 @@ export const useWeb3 = () => {
   };
 
   const connectWallet = useCallback(async () => {
-    if (!isClient || !window.ethereum) {
-      setError('No active wallet found');
+    if (!isClient) {
+      setError('Not running in browser environment');
+      return;
+    }
+
+    if (!isWeb3Available()) {
+      setError('No Web3 wallet detected. Please install MetaMask, TrustWallet, or another Web3 wallet.');
       return;
     }
 
@@ -180,10 +198,17 @@ export const useWeb3 = () => {
     setError(null);
 
     try {
-      // Request account access
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      // Try to get ethereum provider
+      const ethereum = window.ethereum || (window as any).web3?.currentProvider;
       
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      if (!ethereum) {
+        throw new Error('No Web3 provider found');
+      }
+
+      // Request account access
+      await ethereum.request({ method: 'eth_requestAccounts' });
+      
+      const provider = new ethers.BrowserProvider(ethereum);
       const signer = await provider.getSigner();
       const account = await signer.getAddress();
       const network = await provider.getNetwork();
@@ -194,7 +219,8 @@ export const useWeb3 = () => {
         account,
         chainId,
         network: network.name,
-        balance: ethers.formatEther(balance)
+        balance: ethers.formatEther(balance),
+        walletType: ethereum.isTrust ? 'TrustWallet' : ethereum.isMetaMask ? 'MetaMask' : 'Unknown'
       });
 
       setWeb3State({
@@ -214,15 +240,23 @@ export const useWeb3 = () => {
       }, 1000); // Small delay to ensure connection is stable
 
       // Listen for account changes
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
+      ethereum.on('accountsChanged', handleAccountsChanged);
+      ethereum.on('chainChanged', handleChainChanged);
 
     } catch (err: any) {
-      setError(err.message || 'Failed to connect wallet');
-      setWeb3State(prev => ({ ...prev, isConnecting: false }));
       console.error('Wallet connection error:', err);
+      
+      if (err.code === 4001) {
+        setError('Connection rejected by user');
+      } else if (err.code === -32002) {
+        setError('Connection request already pending. Please check your wallet.');
+      } else {
+        setError(err.message || 'Failed to connect wallet');
+      }
+      
+      setWeb3State(prev => ({ ...prev, isConnecting: false }));
     }
-  }, [fetchTokenBalances, isClient]);
+  }, [fetchTokenBalances, isClient, isWeb3Available]);
 
   const disconnectWallet = useCallback(() => {
     setWeb3State({
