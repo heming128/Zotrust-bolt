@@ -1096,6 +1096,23 @@ body {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
 }
 
+.loading-ads, .loading-cities {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.loading-spinner {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .action-btn.secondary {
   background: rgba(243, 244, 246, 0.8);
   backdrop-filter: blur(10px);

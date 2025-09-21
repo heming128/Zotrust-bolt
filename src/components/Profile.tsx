@@ -1,46 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
+import { useDatabase } from '../hooks/useDatabase';
 
-interface UserProfile {
-  name: string;
-  mobile: string;
-  isVerified: boolean;
-}
 
 const Profile: React.FC = () => {
   const { account, isConnected } = useWeb3();
-  const [profile, setProfile] = useState<UserProfile>({
-    name: '',
-    mobile: '',
-    isVerified: false
-  });
+  const { user, loading, error, updateUserProfile, clearError } = useDatabase();
   const [isEditing, setIsEditing] = useState(false);
-  const [tempProfile, setTempProfile] = useState<UserProfile>({
+  const [tempProfile, setTempProfile] = useState({
     name: '',
     mobile: '',
-    isVerified: false
+    is_verified: false
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  // Load profile from localStorage on component mount
+  // Update temp profile when user data changes
   useEffect(() => {
-    if (account) {
-      const savedProfile = localStorage.getItem(`profile_${account}`);
-      if (savedProfile) {
-        const parsedProfile = JSON.parse(savedProfile);
-        setProfile(parsedProfile);
-        setTempProfile(parsedProfile);
-      }
+    if (user) {
+      setTempProfile({
+        name: user.name || '',
+        mobile: user.mobile || '',
+        is_verified: user.is_verified || false
+      });
     }
-  }, [account]);
+  }, [user]);
 
   const handleEdit = () => {
-    setTempProfile({ ...profile });
+    if (user) {
+      setTempProfile({
+        name: user.name || '',
+        mobile: user.mobile || '',
+        is_verified: user.is_verified || false
+      });
+    }
     setIsEditing(true);
   };
 
   const handleCancel = () => {
-    setTempProfile({ ...profile });
+    if (user) {
+      setTempProfile({
+        name: user.name || '',
+        mobile: user.mobile || '',
+        is_verified: user.is_verified || false
+      });
+    }
     setIsEditing(false);
   };
 
@@ -52,34 +55,34 @@ const Profile: React.FC = () => {
 
     setIsSaving(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const updatedProfile = {
-      ...tempProfile,
-      name: tempProfile.name.trim(),
-      mobile: tempProfile.mobile.trim(),
-      isVerified: tempProfile.mobile.length >= 10 // Simple verification logic
-    };
-
-    setProfile(updatedProfile);
-    
-    // Save to localStorage
-    if (account) {
-      localStorage.setItem(`profile_${account}`, JSON.stringify(updatedProfile));
+    try {
+      await updateUserProfile({
+        name: tempProfile.name.trim(),
+        mobile: tempProfile.mobile.trim(),
+        is_verified: tempProfile.mobile.length >= 10 // Simple verification logic
+      });
+      
+      setIsEditing(false);
+    } catch (err: any) {
+      alert('Error saving profile: ' + err.message);
+    } finally {
+      setIsSaving(false);
     }
-    
-    setIsEditing(false);
-    setIsSaving(false);
   };
 
-  const handleInputChange = (field: keyof UserProfile, value: string) => {
+  const handleInputChange = (field: string, value: string) => {
     setTempProfile(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
+  // Clear error when component mounts
+  useEffect(() => {
+    if (error) {
+      clearError();
+    }
+  }, []);
   if (!isConnected) {
     return (
       <div className="profile-container">
@@ -105,7 +108,7 @@ const Profile: React.FC = () => {
             {account?.slice(0, 6)}...{account?.slice(-4)}
           </p>
         </div>
-        {profile.isVerified && (
+        {user?.is_verified && (
           <div className="verification-badge">
             <span className="verified-icon">✅</span>
             <span>Verified</span>
@@ -141,7 +144,7 @@ const Profile: React.FC = () => {
               />
             ) : (
               <div className="profile-display">
-                {profile.name || 'Not provided'}
+                {user?.name || 'Not provided'}
               </div>
             )}
           </div>
@@ -161,10 +164,10 @@ const Profile: React.FC = () => {
               />
             ) : (
               <div className="profile-display">
-                {profile.mobile || 'Not provided'}
+                {user?.mobile || 'Not provided'}
               </div>
             )}
-            {profile.mobile && profile.isVerified && (
+            {user?.mobile && user?.is_verified && (
               <div className="verification-status">
                 <span className="verified-text">✅ Verified</span>
               </div>
@@ -225,11 +228,11 @@ const Profile: React.FC = () => {
         <h3>Trading Statistics</h3>
         <div className="stats-grid">
           <div className="stat-item">
-            <div className="stat-value">0</div>
+            <div className="stat-value">{user?.total_trades || 0}</div>
             <div className="stat-label">Total Trades</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">0.0</div>
+            <div className="stat-value">{user?.total_trades ? '100%' : '0%'}</div>
             <div className="stat-label">Success Rate</div>
           </div>
           <div className="stat-item">
@@ -237,7 +240,7 @@ const Profile: React.FC = () => {
             <div className="stat-label">Active Ads</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">New</div>
+            <div className="stat-value">{user?.total_trades > 10 ? 'Pro' : 'New'}</div>
             <div className="stat-label">Trader Level</div>
           </div>
         </div>
