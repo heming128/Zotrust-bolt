@@ -334,89 +334,6 @@ const Dashboard: React.FC = () => {
         )}
       </div>
 
-      {/* Quick Actions Section */}
-      <div className="quick-actions-section">
-        <h3 className="section-title">Quick Actions</h3>
-        <div className="quick-actions-grid">
-          <button className="quick-action-btn p2p-action">
-            <div className="action-icon">🤝</div>
-            <div className="action-content">
-              <span className="action-title">P2P Trading</span>
-              <span className="action-desc">Buy & Sell crypto</span>
-            </div>
-          </button>
-          
-          <button className="quick-action-btn trades-action">
-            <div className="action-icon">📊</div>
-            <div className="action-content">
-              <span className="action-title">My Trades</span>
-              <span className="action-desc">View trade history</span>
-            </div>
-          </button>
-          
-          <button className="quick-action-btn profile-action">
-            <div className="action-icon">👤</div>
-            <div className="action-content">
-              <span className="action-title">Profile</span>
-              <span className="action-desc">Manage account</span>
-            </div>
-          </button>
-          
-          <button className="quick-action-btn request-action">
-            <div className="action-icon">📝</div>
-            <div className="action-content">
-              <span className="action-title">Trade Request</span>
-              <span className="action-desc">Create new request</span>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      {/* Quick Actions Section */}
-      <div className="quick-actions-section">
-        <h3 className="section-title">Quick Actions</h3>
-        <div className="quick-actions-grid">
-          <button className="quick-action-btn p2p-action">
-            <div className="action-icon">🤝</div>
-            <div className="action-content">
-              <span className="action-title">P2P Trading</span>
-              <span className="action-desc">Buy & Sell crypto</span>
-            </div>
-          </button>
-          
-          <button className="quick-action-btn trades-action">
-            <div className="action-icon">📊</div>
-            <div className="action-content">
-              <span className="action-title">My Trades</span>
-              <span className="action-desc">View trade history</span>
-            </div>
-          </button>
-          
-          <button className="quick-action-btn profile-action">
-            <div className="action-icon">👤</div>
-            <div className="action-content">
-              <span className="action-title">Profile</span>
-              <span className="action-desc">Manage account</span>
-            </div>
-          </button>
-          
-          <button className="quick-action-btn request-action">
-            <div className="action-icon">📝</div>
-            <div className="action-content">
-              <span className="action-title">Trade Request</span>
-              <span className="action-desc">Create new request</span>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      {/* City Selection Modal */}
-      <CityModal 
-        isOpen={showCityModal}
-        onClose={() => setShowCityModal(false)}
-        onSelectCity={handleCitySelect}
-      />
-
       {/* Four Action Buttons */}
       <div className="dashboard-action-buttons">
         <button className="dashboard-action-btn p2p-btn">
@@ -439,6 +356,13 @@ const Dashboard: React.FC = () => {
           <span className="btn-text">Request</span>
         </button>
       </div>
+
+      {/* City Selection Modal */}
+      <CityModal 
+        isOpen={showCityModal}
+        onClose={() => setShowCityModal(false)}
+        onSelectCity={handleCitySelect}
+      />
     </div>
   );
 };
