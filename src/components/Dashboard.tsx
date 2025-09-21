@@ -245,7 +245,6 @@ const Dashboard: React.FC = () => {
         position: 'relative',
         overflow: 'hidden'
       }}>
-              {isConnecting ? 'Connecting...' : 'Connect Wallet'}
         <div style={{
           position: 'absolute',
           top: '-20px',
@@ -284,19 +283,9 @@ const Dashboard: React.FC = () => {
                 color: '#1a1a1a'
               }}>
                 Welcome to
-              {isConnecting ? 'Please check your wallet' : 'Connect to start trading'}
+              </h3>
             </div>
           </div>
-          {isConnecting && (
-            <div style={{
-              width: '20px',
-              height: '20px',
-              border: '2px solid rgba(255,255,255,0.3)',
-              borderTop: '2px solid white',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite'
-            }}></div>
-          )}
           
           <h2 style={{
             margin: '0 0 16px 0',
