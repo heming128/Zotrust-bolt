@@ -1888,7 +1888,7 @@ body {
   background: white;
   color: #333;
   border-radius: 15px;
-  padding: 1rem;
+  padding: 1.5rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
@@ -1897,32 +1897,117 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .market-title {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #333;
 }
 
 .token-selector {
   background: #f3f4f6;
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
   font-weight: 600;
   color: #4f46e5;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.9rem;
+  gap: 0.5rem;
   position: relative;
+  transition: all 0.3s ease;
+}
+
+.token-selector:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.token-selector .token-icon {
+  font-size: 1rem;
+}
+
+.token-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 200px;
+  overflow: hidden;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.token-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.token-option:last-child {
+  border-bottom: none;
+}
+
+.token-option:hover {
+  background: #f8fafc;
+}
+
+.token-option.active {
+  background: #f0f9ff;
+  border-left: 4px solid #4f46e5;
+}
+
+.token-option .token-icon {
+  font-size: 1.2rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f1f5f9;
+}
+
+.token-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.token-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.token-desc {
+  font-size: 0.85rem;
+  color: #64748b;
 }
 
 .dropdown-arrow {
-  font-size: 0.7rem;
-}
+  font-size: 0.8rem;
+  opacity: 0.8;
 }
 
 .market-stats {
@@ -1944,7 +2029,7 @@ body {
 }
 
 .stat-value {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #333;
 }
@@ -1955,6 +2040,54 @@ body {
 
 .sell-price {
   color: #dc2626;
+}
+
+.empty-traders {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  text-align: center;
+  color: #fff;
+  margin-top: 2rem;
+}
+
+.empty-traders .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.empty-traders h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.empty-traders p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.empty-traders .post-ad-btn {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.empty-traders .post-ad-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
 }
 
 /* Trading Controls */
@@ -2028,58 +2161,6 @@ body {
   gap: 1rem;
 }
 
-.token-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: #fff;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  min-width: 160px;
-  margin-top: 0.5rem;
-  overflow: hidden;
-}
-
-.token-option {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.token-option:last-child {
-  border-bottom: none;
-}
-
-.token-option:hover {
-  background: #f9fafb;
-}
-
-.token-option.active {
-  background: #f0f9ff;
-  color: #4f46e5;
-}
-
-.token-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.token-name {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.token-desc {
-  font-size: 0.75rem;
-  color: #6b7280;
-}
 
 .trader-header {
   margin-bottom: 1rem;
@@ -3479,7 +3560,7 @@ body {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .stat-item {
@@ -3494,17 +3575,12 @@ body {
   font-size: 2rem;
   font-weight: 700;
   color: #4f46e5;
-  gap: 0.3rem;
-  text-align: center;
-  padding: 0.75rem 0.5rem;
-  background: #f9fafb;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
+  margin-bottom: 0.5rem;
 }
 
 .stat-label {
   color: #64748b;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
