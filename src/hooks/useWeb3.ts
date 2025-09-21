@@ -196,6 +196,11 @@ export const useWeb3 = () => {
   const disconnectWallet = useCallback(() => {
     setWeb3State({
       account: null,
+    }
+    )
+  }
+  )
+}
 import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 
