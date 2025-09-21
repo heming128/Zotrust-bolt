@@ -48,6 +48,9 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const [showTradeRequestModal, setShowTradeRequestModal] = useState(false);
   const [selectedTraderForTrade, setSelectedTraderForTrade] = useState<Trader | null>(null);
   const [tradeAction, setTradeAction] = useState<'buy' | 'sell'>('buy');
+  const [showAmountModal, setShowAmountModal] = useState(false);
+  const [selectedTraderForAmount, setSelectedTraderForAmount] = useState<Trader | null>(null);
+  const [amountAction, setAmountAction] = useState<'buy' | 'sell'>('buy');
 
   const marketData: MarketData = {
     bestBuyPrice: 87.99,
@@ -138,9 +141,9 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   };
 
   const handleTradeClick = (trader: Trader, action: 'buy' | 'sell') => {
-    setSelectedTraderForTrade(trader);
-    setTradeAction(action);
-    setShowTradeRequestModal(true);
+    setSelectedTraderForAmount(trader);
+    setAmountAction(action);
+    setShowAmountModal(true);
   };
 
   const handleTradeRequestSubmit = (tradeData: any) => {
@@ -157,6 +160,13 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
     setSelectedTraderForTrade(null);
   };
 
+  const handleAmountSubmit = (amount: string, paymentMethod: string) => {
+    // Close amount modal and open trade request modal with pre-filled data
+    setShowAmountModal(false);
+    setSelectedTraderForTrade(selectedTraderForAmount);
+    setTradeAction(amountAction);
+    setShowTradeRequestModal(true);
+  };
   const handleAdCreated = async (newAd: Trader) => {
     if (onAddUserAd) {
       onAddUserAd(newAd);
@@ -516,8 +526,171 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
         action={tradeAction}
         selectedToken={selectedToken}
       />
+
+      {/* Amount Input Modal */}
+      <AmountInputModal 
+        isOpen={showAmountModal}
+        onClose={() => setShowAmountModal(false)}
+        onSubmit={handleAmountSubmit}
+        trader={selectedTraderForAmount}
+        action={amountAction}
+        selectedToken={selectedToken}
+      />
     </div>
   );
 };
 
+// Amount Input Modal Component
+interface AmountInputModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (amount: string, paymentMethod: string) => void;
+  trader: any;
+  action: 'buy' | 'sell';
+  selectedToken: 'USDC' | 'USDT';
+}
+
+const AmountInputModal: React.FC<AmountInputModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  trader, 
+  action, 
+  selectedToken 
+}) => {
+  const [amount, setAmount] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('UPI Transfer');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!isOpen || !trader) return null;
+
+  const handleSubmit = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      alert('Please enter a valid amount');
+      return;
+    }
+
+    const amountNum = parseFloat(amount);
+    if (amountNum < trader.limit.min || amountNum > trader.limit.max) {
+      alert(`Amount must be between ₹${trader.limit.min} and ₹${trader.limit.max}`);
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      await onSubmit(amount, paymentMethod);
+      // Reset form
+      setAmount('');
+    } catch (error) {
+      console.error('Amount submit error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleClose = () => {
+    setAmount('');
+    onClose();
+  };
+
+  const tokenAmount = amount ? (parseFloat(amount) / trader.price).toFixed(6) : '0.000000';
+  const totalValue = amount ? parseFloat(amount).toFixed(2) : '0.00';
+
+  return (
+    <div className="modal-overlay" onClick={handleClose}>
+      <div className="amount-input-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="amount-modal-header">
+          <button className="back-btn" onClick={handleClose}>
+            ←
+          </button>
+          <h2>
+            {action === 'buy' ? 'Buy' : 'Sell'} {selectedToken}
+          </h2>
+          <button className="close-btn" onClick={handleClose}>
+            ✕
+          </button>
+        </div>
+
+        {/* Trader Info */}
+        <div className="trader-info-card">
+          <div className="trader-avatar">
+            <span className="avatar-icon">👤</span>
+          </div>
+          <div className="trader-details">
+            <h3>{trader.name}</h3>
+            <div className="trader-rating">
+              <span className="star">⭐</span>
+              <span>{trader.rating}</span>
+              <span className="trades-count">({trader.totalTrades} trades)</span>
+            </div>
+            <div className="price-display">
+              Price: <span className="price-value">₹{trader.price.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Amount Input Section */}
+        <div className="amount-input-section">
+          <h3>Enter Amount</h3>
+          <div className="amount-input-wrapper">
+            <span className="currency-symbol">₹</span>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Enter amount in INR"
+              className="amount-input-field"
+              min={trader.limit.min}
+              max={trader.limit.max}
+            />
+          </div>
+          
+          <div className="limit-display">
+            Limit: ₹{trader.limit.min.toLocaleString()} - ₹{trader.limit.max.toLocaleString()}
+          </div>
+          
+          {amount && (
+            <div className="calculation-display">
+              <div className="calc-row">
+                <span>You will {action}:</span>
+                <span className="token-amount">{tokenAmount} {selectedToken}</span>
+              </div>
+              <div className="calc-row total-row">
+                <span>Total:</span>
+                <span className="total-value">₹{totalValue}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Payment Method Selection */}
+        <div className="payment-method-section">
+          <h4>Payment Method</h4>
+          <div className="payment-methods-grid">
+            {trader.paymentMethods.map((method: string, index: number) => (
+              <button
+                key={index}
+                className={`payment-method-option ${paymentMethod === method ? 'active' : ''}`}
+                onClick={() => setPaymentMethod(method)}
+              >
+                {method}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <button 
+          className="buy-request-btn"
+          onClick={handleSubmit}
+          disabled={isSubmitting || !amount}
+        >
+          {isSubmitting ? 'Processing...' : `Send ${action === 'buy' ? 'Buy' : 'Sell'} Request`}
+        </button>
+      </div>
+    </div>
+  );
+};
 export default P2PTrading;
