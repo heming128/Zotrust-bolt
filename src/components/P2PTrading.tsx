@@ -431,14 +431,17 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
   const [paymentMethod, setPaymentMethod] = useState('UPI Transfer');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Early return if modal is not open or trader is null
   if (!isOpen || !trader) {
     return null;
   }
 
-  // Reset form when modal opens
+  // Set default payment method safely
   React.useEffect(() => {
-    if (isOpen && trader) {
-      setPaymentMethod(trader.paymentMethods[0] || 'UPI Transfer');
+    if (isOpen && trader && trader.paymentMethods && trader.paymentMethods.length > 0) {
+      setPaymentMethod(trader.paymentMethods[0]);
+    } else {
+      setPaymentMethod('UPI Transfer');
     }
   }, [isOpen, trader]);
 
@@ -449,8 +452,11 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
     }
 
     const amountNum = parseFloat(amount);
-    if (amountNum < trader.limit.min || amountNum > trader.limit.max) {
-      alert(`Amount must be between ₹${trader.limit.min} and ₹${trader.limit.max}`);
+    const minLimit = trader.limit?.min || 0;
+    const maxLimit = trader.limit?.max || 999999;
+    
+    if (amountNum < minLimit || amountNum > maxLimit) {
+      alert(`Amount must be between ₹${minLimit} and ₹${maxLimit}`);
       return;
     }
 
@@ -462,7 +468,7 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
       
       // Reset form
       setAmount('');
-      alert(`${action === 'buy' ? 'Buy' : 'Sell'} request sent to ${trader.name}!`);
+      alert(`${action === 'buy' ? 'Buy' : 'Sell'} request sent to ${trader.name || 'trader'}!`);
       onClose();
     } catch (error) {
       console.error('Amount submit error:', error);
@@ -477,8 +483,10 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
     onClose();
   };
 
-  const tokenAmount = amount && trader.price ? (parseFloat(amount) / trader.price).toFixed(6) : '0.000000';
+  const traderPrice = trader.price || 87.06;
+  const tokenAmount = amount ? (parseFloat(amount) / traderPrice).toFixed(6) : '0.000000';
   const totalValue = amount ? parseFloat(amount).toFixed(2) : '0.00';
+  const traderPaymentMethods = trader.paymentMethods || ['UPI Transfer', 'Bank Transfer'];
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
@@ -496,18 +504,18 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
         {/* Trader Info */}
         <div className="trader-info-card">
           <div className="trader-details">
-            <h3>{trader.name}</h3>
+            <h3>{trader.name || 'Anonymous Trader'}</h3>
             <div className="trader-rating">
               <span className="star">⭐</span>
-              <span>{trader.rating}</span>
-              <span className="trades-count">({trader.totalTrades} trades)</span>
+              <span>{trader.rating || 5.0}</span>
+              <span className="trades-count">({trader.totalTrades || 0} trades)</span>
             </div>
-            <div className={`online-status ${trader.isOnline ? 'online' : 'offline'}`}>
+            <div className={`online-status ${trader.isOnline !== false ? 'online' : 'offline'}`}>
               <span className="status-dot"></span>
-              {trader.isOnline ? 'Online' : 'Offline'}
+              {trader.isOnline !== false ? 'Online' : 'Offline'}
             </div>
             <div className="price-display">
-              Price: <span className="price-value">₹{trader.price.toFixed(2)}</span>
+              Price: <span className="price-value">₹{traderPrice.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -523,14 +531,14 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount in INR"
               className="amount-input-field"
-              min={trader.limit.min}
-              max={trader.limit.max}
+              min={trader.limit?.min || 0}
+              max={trader.limit?.max || 999999}
               autoFocus
             />
           </div>
           
           <div className="limit-display">
-            Limit: ₹{trader.limit.min.toLocaleString()} - ₹{trader.limit.max.toLocaleString()}
+            Limit: ₹{(trader.limit?.min || 0).toLocaleString()} - ₹{(trader.limit?.max || 999999).toLocaleString()}
           </div>
           
           {amount && (
@@ -551,7 +559,7 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
         <div className="payment-method-section">
           <h4>Payment Method</h4>
           <div className="payment-methods-grid">
-            {trader.paymentMethods.map((method, index) => (
+            {traderPaymentMethods.map((method, index) => (
               <button
                 key={index}
                 className={`payment-method-option ${paymentMethod === method ? 'active' : ''}`}
