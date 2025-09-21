@@ -31,7 +31,7 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
       // Create the ad
       const newAd = {
         id: Date.now().toString(),
-        name: userProfile?.name || 'Anonymous User', // Use profile name or fallback
+        name: userProfile?.name || 'Anonymous User',
         rating: 5.0,
         totalTrades: 0,
         isOnline: true,
@@ -44,7 +44,7 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
           max: parseFloat(maxLimit) 
         },
         paymentMethods: ['UPI Transfer', 'Bank Transfer'],
-        adType: adType, // 'buy' or 'sell'
+        adType: adType,
         token: selectedToken
       };
       
@@ -85,106 +85,225 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
   };
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="post-ad-modal" onClick={(e) => e.stopPropagation()}>
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      padding: '20px'
+    }} onClick={handleClose}>
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '15px',
+        width: '100%',
+        maxWidth: '400px',
+        maxHeight: '90vh',
+        overflow: 'auto',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+      }} onClick={(e) => e.stopPropagation()}>
+        
         {/* Header */}
-        <div className="post-ad-header">
-          <button className="back-btn" onClick={handleBack}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '20px',
+          borderBottom: '1px solid #eee'
+        }}>
+          <button 
+            onClick={handleBack}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '20px',
+              cursor: 'pointer',
+              padding: '5px'
+            }}
+          >
             ←
           </button>
-          <h2>Post Ad</h2>
-          <button className="close-btn" onClick={handleClose}>
+          <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
+            Post Ad
+          </h2>
+          <button 
+            onClick={handleClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '20px',
+              cursor: 'pointer',
+              padding: '5px'
+            }}
+          >
             ✕
           </button>
         </div>
 
         {/* Progress */}
-        <div className="progress-indicator">
-          <span className="progress-text">Step {step} of 2</span>
-          <div className="progress-bar">
-            <div 
-              className="progress-fill" 
-              style={{ width: `${(step / 2) * 100}%` }}
-            ></div>
+        <div style={{ padding: '20px' }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '10px'
+          }}>
+            <span style={{ fontSize: '14px', color: '#666' }}>Step {step} of 2</span>
+          </div>
+          <div style={{
+            width: '100%',
+            height: '4px',
+            backgroundColor: '#f0f0f0',
+            borderRadius: '2px',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              width: `${(step / 2) * 100}%`,
+              height: '100%',
+              backgroundColor: '#4CAF50',
+              transition: 'width 0.3s ease'
+            }}></div>
           </div>
         </div>
 
         {/* Step 1 Content */}
         {step === 1 && (
-          <div className="step-content">
+          <div style={{ padding: '0 20px 20px' }}>
             {/* Ad Type Selection */}
-            <div className="ad-type-section">
-              <h3>I want to post an ad to</h3>
-              <div className="ad-type-buttons">
+            <div style={{ marginBottom: '25px' }}>
+              <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>I want to post an ad to</h3>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
                 <button 
-                  className={`ad-type-btn buy-btn ${adType === 'buy' ? 'active' : ''}`}
                   onClick={() => setAdType('buy')}
+                  style={{
+                    flex: 1,
+                    padding: '15px',
+                    border: adType === 'buy' ? '2px solid #4CAF50' : '1px solid #ddd',
+                    borderRadius: '10px',
+                    backgroundColor: adType === 'buy' ? '#e8f5e8' : 'white',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
                 >
-                  <span className="btn-icon">📈</span>
-                  Buy
+                  <span style={{ fontSize: '20px' }}>📈</span>
+                  <span style={{ fontWeight: 'bold' }}>Buy</span>
                 </button>
                 <button 
-                  className={`ad-type-btn sell-btn ${adType === 'sell' ? 'active' : ''}`}
                   onClick={() => setAdType('sell')}
+                  style={{
+                    flex: 1,
+                    padding: '15px',
+                    border: adType === 'sell' ? '2px solid #f44336' : '1px solid #ddd',
+                    borderRadius: '10px',
+                    backgroundColor: adType === 'sell' ? '#ffebee' : 'white',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
                 >
-                  <span className="btn-icon">📉</span>
-                  Sell
+                  <span style={{ fontSize: '20px' }}>📉</span>
+                  <span style={{ fontWeight: 'bold' }}>Sell</span>
                 </button>
               </div>
-              <div className="ad-type-info">
-                <span className="check-icon">✅</span>
-                <span className="info-text">
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px'
+              }}>
+                <span>✅</span>
+                <span style={{ fontSize: '14px', color: '#666' }}>
                   You want to {adType.toUpperCase()} {selectedToken} {adType === 'buy' ? 'from sellers' : 'to buyers'}
                 </span>
               </div>
             </div>
 
             {/* Asset Selection */}
-            <div className="form-section">
-              <h4>Asset</h4>
-              <div className="token-selection-grid">
+            <div style={{ marginBottom: '25px' }}>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold' }}>Asset</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <button
-                  type="button"
-                  className={`token-selection-btn ${selectedToken === 'USDC' ? 'active' : ''}`}
                   onClick={() => setSelectedToken('USDC')}
+                  style={{
+                    padding: '15px',
+                    border: selectedToken === 'USDC' ? '2px solid #2196F3' : '1px solid #ddd',
+                    borderRadius: '10px',
+                    backgroundColor: selectedToken === 'USDC' ? '#e3f2fd' : 'white',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
                 >
-                  <div className="token-icon usdc">🔵</div>
-                  <div className="token-info">
-                    <span className="token-name">USDC</span>
-                    <span className="token-desc">USD Coin</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ fontSize: '20px' }}>🔵</div>
+                    <div>
+                      <div style={{ fontWeight: 'bold' }}>USDC</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>USD Coin</div>
+                    </div>
                   </div>
-                  <div className="token-price">₹87.06</div>
+                  <div style={{ fontWeight: 'bold' }}>₹87.06</div>
                 </button>
                 
                 <button
-                  type="button"
-                  className={`token-selection-btn ${selectedToken === 'USDT' ? 'active' : ''}`}
                   onClick={() => setSelectedToken('USDT')}
+                  style={{
+                    padding: '15px',
+                    border: selectedToken === 'USDT' ? '2px solid #4CAF50' : '1px solid #ddd',
+                    borderRadius: '10px',
+                    backgroundColor: selectedToken === 'USDT' ? '#e8f5e8' : 'white',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
                 >
-                  <div className="token-icon usdt">🟢</div>
-                  <div className="token-info">
-                    <span className="token-name">USDT</span>
-                    <span className="token-desc">Tether USD</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ fontSize: '20px' }}>🟢</div>
+                    <div>
+                      <div style={{ fontWeight: 'bold' }}>USDT</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>Tether USD</div>
+                    </div>
                   </div>
-                  <div className="token-price">₹87.15</div>
+                  <div style={{ fontWeight: 'bold' }}>₹87.15</div>
                 </button>
               </div>
             </div>
 
             {/* Fiat Currency */}
-            <div className="form-section">
-              <h4>With Fiat</h4>
-              <div className="fiat-selector">
-                <div className="fiat-info">
-                  <div className="fiat-icon">🇮🇳</div>
-                  <div className="fiat-details">
-                    <span className="fiat-name">INR</span>
-                    <span className="fiat-desc">Indian Rupee</span>
+            <div style={{ marginBottom: '25px' }}>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold' }}>With Fiat</h4>
+              <div style={{
+                padding: '15px',
+                border: '1px solid #ddd',
+                borderRadius: '10px',
+                backgroundColor: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ fontSize: '20px' }}>🇮🇳</div>
+                  <div>
+                    <div style={{ fontWeight: 'bold' }}>INR</div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>Indian Rupee</div>
                   </div>
                 </div>
-                <div className="fiat-symbol">
-                  <span>₹</span>
-                  <span className="dropdown-arrow">▼</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ fontWeight: 'bold' }}>₹</span>
+                  <span style={{ fontSize: '12px', color: '#666' }}>▼</span>
                 </div>
               </div>
             </div>
@@ -193,91 +312,155 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
 
         {/* Step 2 Content */}
         {step === 2 && (
-          <div className="step-content">
+          <div style={{ padding: '0 20px 20px' }}>
             {/* Price Type Selection */}
-            <div className="form-section">
-              <h4>Price Type</h4>
-              <div className="price-type-buttons">
+            <div style={{ marginBottom: '25px' }}>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold' }}>Price Type</h4>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                 <button 
-                  className={`price-type-btn ${priceType === 'fixed' ? 'active' : ''}`}
                   onClick={() => setPriceType('fixed')}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    border: priceType === 'fixed' ? '2px solid #2196F3' : '1px solid #ddd',
+                    borderRadius: '8px',
+                    backgroundColor: priceType === 'fixed' ? '#e3f2fd' : 'white',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '14px'
+                  }}
                 >
-                  <span className="lock-icon">🔒</span>
+                  <span>🔒</span>
                   Fixed Price
                 </button>
                 <button 
-                  className={`price-type-btn ${priceType === 'market' ? 'active' : ''}`}
                   onClick={() => setPriceType('market')}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    border: priceType === 'market' ? '2px solid #2196F3' : '1px solid #ddd',
+                    borderRadius: '8px',
+                    backgroundColor: priceType === 'market' ? '#e3f2fd' : 'white',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '14px'
+                  }}
                 >
-                  <span className="chart-icon">📊</span>
+                  <span>📊</span>
                   Market Price
                 </button>
               </div>
-              <p className="price-type-desc">
+              <p style={{ margin: 0, fontSize: '12px', color: '#666' }}>
                 You will set a fixed price for your trades
               </p>
             </div>
 
             {/* Your Price */}
-            <div className="form-section">
-              <h4>Your Price</h4>
-              <div className="price-input-section">
-                <div className="price-input">
-                  <span className="currency-symbol">₹</span>
-                  <input 
-                    type="number" 
-                    value={price} 
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="price-value"
-                    placeholder="87.06"
-                  />
-                </div>
-                
-                <div className="market-info">
-                  <div className="highest-order">
-                    <span className="trend-icon">📈</span>
-                    <span>Market Price: ₹87.06</span>
-                  </div>
-                </div>
+            <div style={{ marginBottom: '25px' }}>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold' }}>Your Price</h4>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                padding: '12px',
+                backgroundColor: 'white'
+              }}>
+                <span style={{ marginRight: '8px', fontWeight: 'bold' }}>₹</span>
+                <input 
+                  type="number" 
+                  value={price} 
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="87.06"
+                  style={{
+                    border: 'none',
+                    outline: 'none',
+                    flex: 1,
+                    fontSize: '16px'
+                  }}
+                />
+              </div>
+              <div style={{
+                marginTop: '8px',
+                padding: '8px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <span>📈</span>
+                <span style={{ fontSize: '12px', color: '#666' }}>Market Price: ₹87.06</span>
               </div>
             </div>
 
             {/* Amount Section */}
-            <div className="form-section">
-              <h4>Amount ({selectedToken})</h4>
-              <div className="amount-input-section">
-                <input 
-                  type="number" 
-                  value={amount} 
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="amount-input-field"
-                  placeholder="Enter amount"
-                />
-              </div>
+            <div style={{ marginBottom: '25px' }}>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold' }}>
+                Amount ({selectedToken})
+              </h4>
+              <input 
+                type="number" 
+                value={amount} 
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  boxSizing: 'border-box'
+                }}
+              />
             </div>
 
             {/* Limits Section */}
-            <div className="form-section">
-              <h4>Order Limits (₹)</h4>
-              <div className="limits-section">
-                <div className="limit-input">
-                  <label>Minimum</label>
+            <div style={{ marginBottom: '25px' }}>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold' }}>
+                Order Limits (₹)
+              </h4>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '12px', color: '#666', marginBottom: '5px', display: 'block' }}>
+                    Minimum
+                  </label>
                   <input 
                     type="number" 
                     value={minLimit} 
                     onChange={(e) => setMinLimit(e.target.value)}
-                    className="limit-input-field"
                     placeholder="500"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      border: '1px solid #ddd',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      boxSizing: 'border-box'
+                    }}
                   />
                 </div>
-                <div className="limit-input">
-                  <label>Maximum</label>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '12px', color: '#666', marginBottom: '5px', display: 'block' }}>
+                    Maximum
+                  </label>
                   <input 
                     type="number" 
                     value={maxLimit} 
                     onChange={(e) => setMaxLimit(e.target.value)}
-                    className="limit-input-field"
                     placeholder="5000"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      border: '1px solid #ddd',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      boxSizing: 'border-box'
+                    }}
                   />
                 </div>
               </div>
@@ -286,9 +469,24 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
         )}
 
         {/* Continue Button */}
-        <button className="continue-btn" onClick={handleContinue}>
-          {step === 1 ? 'Continue →' : 'Create Ad'}
-        </button>
+        <div style={{ padding: '20px', borderTop: '1px solid #eee' }}>
+          <button 
+            onClick={handleContinue}
+            style={{
+              width: '100%',
+              padding: '15px',
+              border: 'none',
+              borderRadius: '10px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              cursor: 'pointer'
+            }}
+          >
+            {step === 1 ? 'Continue →' : 'Create Ad'}
+          </button>
+        </div>
       </div>
     </div>
   );
