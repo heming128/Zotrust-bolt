@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
 import PostAdModal from './PostAdModal';
+import TradeRequestModal from './TradeRequestModal';
 
 interface MarketData {
   bestBuyPrice: number;
@@ -44,6 +45,9 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const [showPostAdModal, setShowPostAdModal] = useState(false);
   const [showTokenDropdown, setShowTokenDropdown] = useState(false);
   const [showMarketStats, setShowMarketStats] = useState(false);
+  const [showTradeRequestModal, setShowTradeRequestModal] = useState(false);
+  const [selectedTraderForTrade, setSelectedTraderForTrade] = useState<Trader | null>(null);
+  const [tradeAction, setTradeAction] = useState<'buy' | 'sell'>('buy');
 
   const marketData: MarketData = {
     bestBuyPrice: 87.99,
@@ -131,6 +135,26 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const handleTraderClick = (trader: Trader) => {
     setSelectedTrader(trader);
     setShowTraderDetails(true);
+  };
+
+  const handleTradeClick = (trader: Trader, action: 'buy' | 'sell') => {
+    setSelectedTraderForTrade(trader);
+    setTradeAction(action);
+    setShowTradeRequestModal(true);
+  };
+
+  const handleTradeRequestSubmit = (tradeData: any) => {
+    // Here you would normally send the trade request to backend
+    console.log('Trade Request Submitted:', {
+      trader: selectedTraderForTrade,
+      action: tradeAction,
+      ...tradeData
+    });
+    
+    // Show success message
+    alert(`Trade request sent to ${selectedTraderForTrade?.name}!`);
+    setShowTradeRequestModal(false);
+    setSelectedTraderForTrade(null);
   };
 
   const handleAdCreated = async (newAd: Trader) => {
@@ -371,7 +395,10 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
             </div>
 
             <div className="action-buttons">
-              <button className={`trade-btn ${trader.adType === 'buy' ? 'sell-to-buyer' : 'buy-from-seller'}`}>
+              <button 
+                className={`trade-btn ${trader.adType === 'buy' ? 'sell-to-buyer' : 'buy-from-seller'}`}
+                onClick={() => handleTradeClick(trader, trader.adType === 'buy' ? 'sell' : 'buy')}
+              >
                 {trader.adType === 'buy' ? `Sell ${trader.token || 'USDC'}` : `Buy ${trader.token || 'USDC'}`}
               </button>
               <button className="message-btn">💬</button>
@@ -459,7 +486,10 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
               </div>
 
               <div className="action-buttons">
-                <button className={`trade-btn ${selectedTrader.adType === 'buy' ? 'sell-to-buyer' : 'buy-from-seller'}`}>
+                <button 
+                  className={`trade-btn ${selectedTrader.adType === 'buy' ? 'sell-to-buyer' : 'buy-from-seller'}`}
+                  onClick={() => handleTradeClick(selectedTrader, selectedTrader.adType === 'buy' ? 'sell' : 'buy')}
+                >
                   {selectedTrader.adType === 'buy' ? `Sell ${selectedTrader.token || 'USDC'}` : `Buy ${selectedTrader.token || 'USDC'}`}
                 </button>
                 <button className="message-btn">💬</button>
@@ -474,6 +504,16 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
         isOpen={showPostAdModal}
         onClose={() => setShowPostAdModal(false)}
         onAdCreated={handleAdCreated}
+        selectedToken={selectedToken}
+      />
+
+      {/* Trade Request Modal */}
+      <TradeRequestModal 
+        isOpen={showTradeRequestModal}
+        onClose={() => setShowTradeRequestModal(false)}
+        onSubmit={handleTradeRequestSubmit}
+        trader={selectedTraderForTrade}
+        action={tradeAction}
         selectedToken={selectedToken}
       />
     </div>
