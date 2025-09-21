@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 
+// Safe window check
+const isClient = typeof window !== 'undefined';
+
 // ERC-20 Token Contract ABI (minimal)
 const ERC20_ABI = [
   'function balanceOf(address owner) view returns (uint256)',
@@ -58,11 +61,10 @@ export const useWeb3 = () => {
 
   const [error, setError] = useState<string | null>(null);
 
-  // Safe window check
-  const isClient = typeof window !== 'undefined';
-
   // Fetch token balances
   const fetchTokenBalances = useCallback(async (provider: ethers.BrowserProvider, account: string, chainId: number) => {
+    if (!isClient) return;
+    
     try {
       setWeb3State(prev => ({ ...prev, isLoadingBalances: true }));
       
@@ -110,39 +112,40 @@ export const useWeb3 = () => {
 
   // Check if wallet is already connected
   useEffect(() => {
-    if (isClient) {
+    if (isClient && window.ethereum) {
       checkConnection();
     }
   }, [isClient]);
 
   const checkConnection = async () => {
+    if (!isClient || !window.ethereum) return;
+    
     try {
-      if (isClient && window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const accounts = await provider.listAccounts();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const accounts = await provider.listAccounts();
+      
+      if (accounts.length > 0) {
+        const network = await provider.getNetwork();
+        const balance = await provider.getBalance(accounts[0]);
+        const chainId = Number(network.chainId);
         
-        if (accounts.length > 0) {
-          const network = await provider.getNetwork();
-          const balance = await provider.getBalance(accounts[0]);
-          const chainId = Number(network.chainId);
-          
-          setWeb3State({
-            account: accounts[0].address,
-            chainId,
-            balance: ethers.formatEther(balance),
-            provider,
-            isConnected: true,
-            isConnecting: false,
-            tokenBalances: { USDC: '0.00', USDT: '0.00' },
-            isLoadingBalances: false,
-          });
-          
-          // Fetch token balances
-          fetchTokenBalances(provider, accounts[0].address, chainId);
-        }
+        setWeb3State({
+          account: accounts[0].address,
+          chainId,
+          balance: ethers.formatEther(balance),
+          provider,
+          isConnected: true,
+          isConnecting: false,
+          tokenBalances: { USDC: '0.00', USDT: '0.00' },
+          isLoadingBalances: false,
+        });
+        
+        // Fetch token balances
+        fetchTokenBalances(provider, accounts[0].address, chainId);
       }
     } catch (err) {
       console.error('Error checking connection:', err);
+      setError(null); // Don't show error for auto-check
     }
   };
 
@@ -181,10 +184,8 @@ export const useWeb3 = () => {
       fetchTokenBalances(provider, account, chainId);
 
       // Listen for account changes
-      if (window.ethereum) {
-        window.ethereum.on('accountsChanged', handleAccountsChanged);
-        window.ethereum.on('chainChanged', handleChainChanged);
-      }
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
 
     } catch (err: any) {
       setError(err.message || 'Failed to connect wallet');
@@ -209,11 +210,6 @@ export const useWeb3 = () => {
     if (isClient && window.ethereum) {
       window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
       window.ethereum.removeListener('chainChanged', handleChainChanged);
-    }
-    
-    // Clear any cached connection data
-    if (isClient) {
-      localStorage.removeItem('walletConnected');
     }
   }, [isClient]);
 

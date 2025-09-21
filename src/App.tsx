@@ -1,29 +1,82 @@
 import React, { useState } from 'react';
+import { useWeb3 } from './hooks/useWeb3';
+import { useDatabase } from './hooks/useDatabase';
 import './App.css';
 
-// Simple Dashboard Component - No external dependencies
+// Dashboard Component with Real Web3 Integration
 const Dashboard: React.FC = () => {
-  const [isConnected, setIsConnected] = useState(false);
+  const { 
+    account, 
+    isConnected, 
+    balance, 
+    tokenBalances, 
+    isLoadingBalances,
+    connectWallet, 
+    disconnectWallet,
+    refreshTokenBalances,
+    error 
+  } = useWeb3();
+  
+  const { getCities } = useDatabase();
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [showCityModal, setShowCityModal] = useState(false);
+  const [cities, setCities] = useState<string[]>([]);
+  const [loadingCities, setLoadingCities] = useState(false);
 
-  const handleConnect = () => {
-    setIsConnected(true);
+  // Load cities from database
+  React.useEffect(() => {
+    if (showCityModal) {
+      loadCities();
+    }
+  }, [showCityModal]);
+
+  const loadCities = async () => {
+    try {
+      setLoadingCities(true);
+      const dbCities = await getCities();
+      setCities(dbCities.map(city => city.name));
+    } catch (error) {
+      // Fallback cities
+      setCities(['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 'Pune', 'Ahmedabad']);
+    } finally {
+      setLoadingCities(false);
+    }
   };
-
-  const handleDisconnect = () => {
-    setIsConnected(false);
-  };
-
+  
   const handleCitySelect = (city: string) => {
     setSelectedCity(city);
+    localStorage.setItem('selectedCity', city);
     setShowCityModal(false);
   };
 
-  const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 'Pune', 'Ahmedabad'];
+  // Load saved city on mount
+  React.useEffect(() => {
+    const savedCity = localStorage.getItem('selectedCity');
+    if (savedCity) {
+      setSelectedCity(savedCity);
+    }
+  }, []);
+
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   return (
     <div className="dashboard-container">
+      {/* Error Display */}
+      {error && (
+        <div className="error-message" style={{ 
+          background: '#fee2e2', 
+          color: '#dc2626', 
+          padding: '1rem', 
+          borderRadius: '10px', 
+          marginBottom: '1rem',
+          border: '1px solid #fecaca'
+        }}>
+          ⚠️ {error}
+        </div>
+      )}
+      
       {/* Connect Wallet Card */}
       {!isConnected ? (
         <div className="connect-wallet-card">
@@ -34,7 +87,7 @@ const Dashboard: React.FC = () => {
             <h3>Connect Wallet</h3>
             <p>Connect to start trading</p>
           </div>
-          <button className="connect-btn-small" onClick={handleConnect}>
+          <button className="connect-btn-small" onClick={connectWallet}>
             Connect
           </button>
         </div>
@@ -45,9 +98,9 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="connect-content">
             <h3>Wallet Connected</h3>
-            <p>0x1234...5678</p>
+            <p>{formatAddress(account || '')}</p>
           </div>
-          <button className="disconnect-btn-small" onClick={handleDisconnect}>
+          <button className="disconnect-btn-small" onClick={disconnectWallet}>
             Disconnect
           </button>
         </div>
@@ -59,16 +112,20 @@ const Dashboard: React.FC = () => {
           <div className="balance-title-section">
             <span className="balance-title">USDC Balance</span>
           </div>
-          <button className="refresh-button">
-            <span>🔄</span>
+          <button 
+            className="refresh-button"
+            onClick={refreshTokenBalances}
+            disabled={isLoadingBalances}
+          >
+            <span>{isLoadingBalances ? '⏳' : '🔄'}</span>
           </button>
         </div>
         <div className="balance-amount">
           <span className="main-amount">
-            {isConnected ? '1,250.00 USDC' : '0.00 USDC'}
+            {isLoadingBalances ? 'Loading...' : `${tokenBalances.USDC} USDC`}
           </span>
           <span className="usd-equivalent">
-            ≈ ${isConnected ? '1,250.00' : '0.00'} USD
+            ≈ ${isLoadingBalances ? '0.00' : tokenBalances.USDC} USD
           </span>
         </div>
       </div>
