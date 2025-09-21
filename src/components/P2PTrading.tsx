@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
 import PostAdModal from './PostAdModal';
-import TradeRequestModal from './TradeRequestModal';
 
 interface MarketData {
   bestBuyPrice: number;
@@ -39,15 +38,9 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
   const [selectedPayment, setSelectedPayment] = useState('Payment');
-  const [amount, setAmount] = useState('');
-  const [showTraderDetails, setShowTraderDetails] = useState(false);
-  const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
   const [showPostAdModal, setShowPostAdModal] = useState(false);
   const [showTokenDropdown, setShowTokenDropdown] = useState(false);
   const [showMarketStats, setShowMarketStats] = useState(false);
-  const [showTradeRequestModal, setShowTradeRequestModal] = useState(false);
-  const [selectedTraderForTrade, setSelectedTraderForTrade] = useState<Trader | null>(null);
-  const [tradeAction, setTradeAction] = useState<'buy' | 'sell'>('buy');
   const [showAmountModal, setShowAmountModal] = useState(false);
   const [selectedTraderForAmount, setSelectedTraderForAmount] = useState<Trader | null>(null);
   const [amountAction, setAmountAction] = useState<'buy' | 'sell'>('buy');
@@ -123,8 +116,6 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   ];
 
   // Filter traders based on active tab
-  // If user wants to "buy", show "sell" ads (people selling to you)
-  // If user wants to "sell", show "buy" ads (people buying from you)
   const getFilteredTraders = () => {
     const allTraders = [...baseTraders, ...userAds];
     const targetAdType = activeTab === 'buy' ? 'sell' : 'buy';
@@ -135,50 +126,16 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
 
   const traders = getFilteredTraders();
 
-  const handleTraderClick = (trader: Trader) => {
-    setSelectedTrader(trader);
-    setShowTraderDetails(true);
-  };
-
   const handleTradeClick = (trader: Trader, action: 'buy' | 'sell') => {
-    if (trader && action) {
-      setSelectedTraderForAmount(trader);
-      setAmountAction(action);
-      setShowAmountModal(true);
-    }
+    setSelectedTraderForAmount(trader);
+    setAmountAction(action);
+    setShowAmountModal(true);
   };
 
-  const handleTradeRequestSubmit = (tradeData: any) => {
-    // Here you would normally send the trade request to backend
-    console.log('Trade Request Submitted:', {
-      trader: selectedTraderForTrade,
-      action: tradeAction,
-      ...tradeData
-    });
-    
-    // Show success message
-    alert(`Trade request sent to ${selectedTraderForTrade?.name}!`);
-    setShowTradeRequestModal(false);
-    setSelectedTraderForTrade(null);
-  };
-
-  const handleAmountSubmit = (amount: string, paymentMethod: string) => {
-    // Close amount modal and open trade request modal with pre-filled data
-    setShowAmountModal(false);
-    if (selectedTraderForAmount) {
-      setSelectedTraderForTrade(selectedTraderForAmount);
-      setTradeAction(amountAction);
-      setShowTradeRequestModal(true);
-    }
-  };
-  const handleAdCreated = async (newAd: Trader) => {
+  const handleAdCreated = (newAd: Trader) => {
     if (onAddUserAd) {
       onAddUserAd(newAd);
     }
-  };
-
-  const handlePostAdClick = () => {
-    setShowPostAdModal(true);
   };
 
   const handleTokenSelect = (token: 'USDC' | 'USDT') => {
@@ -322,7 +279,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
           <button className="amount-btn">Amount</button>
           <button 
             className="post-ad-btn"
-            onClick={handlePostAdClick}
+            onClick={() => setShowPostAdModal(true)}
           >
             + Post Ad
           </button>
@@ -347,11 +304,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
       {/* Traders List */}
       <div className="traders-grid">
         {traders.map((trader) => (
-          <div 
-            key={trader.id} 
-            className="trader-ad-card"
-            onClick={() => handleTraderClick(trader)}
-          >
+          <div key={trader.id} className="trader-ad-card">
             <div className="trader-header">
               <div className="trader-info">
                 <div className="trader-name-section">
@@ -380,9 +333,6 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
                 <span className="location">📍 {trader.location}</span>
                 <span className="distance">2.5 km away</span>
               </div>
-            </div>
-
-            <div className="trader-details">
             </div>
 
             <div className="trading-info">
@@ -434,98 +384,10 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
           </p>
           <button 
             className="post-ad-btn"
-            onClick={handlePostAdClick}
+            onClick={() => setShowPostAdModal(true)}
           >
             + Post Your Ad
           </button>
-        </div>
-      )}
-
-      {/* Trader Details Modal */}
-      {showTraderDetails && selectedTrader && (
-        <div className="modal-overlay" onClick={() => setShowTraderDetails(false)}>
-          <div className="trader-details-modal" onClick={(e) => e.stopPropagation()}>
-            <div key={selectedTrader.id} className="trader-ad-card">
-              <div className="trader-header">
-                <div className="trader-info">
-                  <div className="trader-name-section">
-                    <span className="trader-name">{selectedTrader.name}</span>
-                    <div className="trader-rating">
-                      <span className="star">⭐</span>
-                      <span className="rating-value">{selectedTrader.rating}</span>
-                      <span className="trades-count">({selectedTrader.totalTrades})</span>
-                    </div>
-                  </div>
-                  <div className={`online-status ${selectedTrader.isOnline ? 'online' : 'offline'}`}>
-                    <span className="status-dot"></span>
-                    {selectedTrader.isOnline ? 'Online' : 'Offline'}
-                  </div>
-                </div>
-              </div>
-
-              <div className="ad-details">
-                <div className="ad-type-badge">
-                  <span className={`ad-type ${selectedTrader.adType}`}>
-                    {selectedTrader.adType === 'buy' ? '📈 Buying' : '📉 Selling'} {selectedTrader.token || 'USDC'}
-                  </span>
-                </div>
-                
-                <div className="location-distance">
-                  <span className="location">📍 {selectedTrader.location}</span>
-                  <span className="distance">2.5 km away</span>
-                </div>
-              </div>
-
-              <div className="trading-info">
-                <div className="price-section">
-                  <div className="price-label">Price</div>
-                  <div className="price-value">₹{selectedTrader.price.toFixed(2)}</div>
-                </div>
-                <div className="available-section">
-                  <div className="available-label">Available</div>
-                  <div className="available-value">{selectedTrader.available.toFixed(2)} {selectedTrader.token || 'USDC'}</div>
-                </div>
-              </div>
-
-              <div className="payment-methods">
-                <span className="payment-label">Payment:</span>
-                <div className="payment-tags">
-                  {selectedTrader.paymentMethods.slice(0, 2).map((method, index) => (
-                    <span key={index} className="payment-tag">{method}</span>
-                  ))}
-                  {selectedTrader.paymentMethods.length > 2 && (
-                    <span className="payment-tag more">+{selectedTrader.paymentMethods.length - 2}</span>
-                  )}
-                </div>
-              </div>
-
-              <div className="action-buttons">
-                <button 
-                  className={`trade-btn ${selectedTrader.adType === 'buy' ? 'sell-to-buyer' : 'buy-from-seller'}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleTradeClick(selectedTrader, selectedTrader.adType === 'buy' ? 'sell' : 'buy');
-                  }}
-                    e.stopPropagation();
-                    handleTradeClick(trader, trader.adType === 'buy' ? 'sell' : 'buy');
-                  }}
-                >
-                  {selectedTrader.adType === 'buy' ? `Sell ${selectedTrader.token || 'USDC'}` : `Buy ${selectedTrader.token || 'USDC'}`}
-                </button>
-                <button 
-                  className="message-btn"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  💬
-                </button>
-                  className="message-btn"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  💬
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
@@ -537,21 +399,10 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
         selectedToken={selectedToken}
       />
 
-      {/* Trade Request Modal */}
-      <TradeRequestModal 
-        isOpen={showTradeRequestModal}
-        onClose={() => setShowTradeRequestModal(false)}
-        onSubmit={handleTradeRequestSubmit}
-        trader={selectedTraderForTrade}
-        action={tradeAction}
-        selectedToken={selectedToken}
-      />
-
       {/* Amount Input Modal */}
       <AmountInputModal 
         isOpen={showAmountModal}
         onClose={() => setShowAmountModal(false)}
-        onSubmit={handleAmountSubmit}
         trader={selectedTraderForAmount}
         action={amountAction}
         selectedToken={selectedToken}
@@ -564,8 +415,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
 interface AmountInputModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (amount: string, paymentMethod: string) => void;
-  trader: any;
+  trader: Trader | null;
   action: 'buy' | 'sell';
   selectedToken: 'USDC' | 'USDT';
 }
@@ -573,7 +423,6 @@ interface AmountInputModalProps {
 const AmountInputModal: React.FC<AmountInputModalProps> = ({ 
   isOpen, 
   onClose, 
-  onSubmit, 
   trader, 
   action, 
   selectedToken 
@@ -582,7 +431,6 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
   const [paymentMethod, setPaymentMethod] = useState('UPI Transfer');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Early return with null check
   if (!isOpen || !trader) {
     return null;
   }
@@ -590,30 +438,32 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
   // Reset form when modal opens
   React.useEffect(() => {
     if (isOpen && trader) {
-      setPaymentMethod(trader.paymentMethods?.[0] || 'UPI Transfer');
+      setPaymentMethod(trader.paymentMethods[0] || 'UPI Transfer');
     }
   }, [isOpen, trader]);
+
   const handleSubmit = async () => {
     if (!amount || parseFloat(amount) <= 0) {
       alert('Please enter a valid amount');
       return;
     }
 
-    if (trader && trader.limit) {
-      const amountNum = parseFloat(amount);
-      if (amountNum < trader.limit.min || amountNum > trader.limit.max) {
-        alert(`Amount must be between ₹${trader.limit.min} and ₹${trader.limit.max}`);
-        return;
-      }
+    const amountNum = parseFloat(amount);
+    if (amountNum < trader.limit.min || amountNum > trader.limit.max) {
+      alert(`Amount must be between ₹${trader.limit.min} and ₹${trader.limit.max}`);
+      return;
     }
 
     setIsSubmitting(true);
     
     try {
-      await onSubmit(amount, paymentMethod);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       // Reset form
       setAmount('');
       alert(`${action === 'buy' ? 'Buy' : 'Sell'} request sent to ${trader.name}!`);
+      onClose();
     } catch (error) {
       console.error('Amount submit error:', error);
     } finally {
@@ -627,7 +477,7 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
     onClose();
   };
 
-  const tokenAmount = amount && trader?.price ? (parseFloat(amount) / trader.price).toFixed(6) : '0.000000';
+  const tokenAmount = amount && trader.price ? (parseFloat(amount) / trader.price).toFixed(6) : '0.000000';
   const totalValue = amount ? parseFloat(amount).toFixed(2) : '0.00';
 
   return (
@@ -635,29 +485,29 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
       <div className="amount-input-modal" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="amount-modal-header">
-          <button className="close-btn" onClick={handleClose}>
-            ✕
-          </button>
           <h2 className="modal-title">
             {action === 'buy' ? 'Buy' : 'Sell'} {selectedToken}
           </h2>
+          <button className="close-btn" onClick={handleClose}>
+            ✕
+          </button>
         </div>
 
         {/* Trader Info */}
         <div className="trader-info-card">
           <div className="trader-details">
-            <h3>{trader?.name || 'Unknown Trader'}</h3>
+            <h3>{trader.name}</h3>
             <div className="trader-rating">
               <span className="star">⭐</span>
-              <span>{trader?.rating || 0}</span>
-              <span className="trades-count">({trader?.totalTrades || 0} trades)</span>
+              <span>{trader.rating}</span>
+              <span className="trades-count">({trader.totalTrades} trades)</span>
             </div>
-            <div className={`online-status ${trader?.isOnline ? 'online' : 'offline'}`}>
+            <div className={`online-status ${trader.isOnline ? 'online' : 'offline'}`}>
               <span className="status-dot"></span>
-              {trader?.isOnline ? 'Online' : 'Offline'}
+              {trader.isOnline ? 'Online' : 'Offline'}
             </div>
             <div className="price-display">
-              Price: <span className="price-value">₹{trader?.price?.toFixed(2) || '0.00'}</span>
+              Price: <span className="price-value">₹{trader.price.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -673,14 +523,14 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount in INR"
               className="amount-input-field"
-              min={trader?.limit?.min || 0}
-              max={trader?.limit?.max || 999999}
+              min={trader.limit.min}
+              max={trader.limit.max}
               autoFocus
             />
           </div>
           
           <div className="limit-display">
-            Limit: ₹{trader?.limit?.min?.toLocaleString() || '0'} - ₹{trader?.limit?.max?.toLocaleString() || '0'}
+            Limit: ₹{trader.limit.min.toLocaleString()} - ₹{trader.limit.max.toLocaleString()}
           </div>
           
           {amount && (
@@ -701,7 +551,7 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
         <div className="payment-method-section">
           <h4>Payment Method</h4>
           <div className="payment-methods-grid">
-            {(trader?.paymentMethods || ['UPI Transfer']).map((method: string, index: number) => (
+            {trader.paymentMethods.map((method, index) => (
               <button
                 key={index}
                 className={`payment-method-option ${paymentMethod === method ? 'active' : ''}`}
