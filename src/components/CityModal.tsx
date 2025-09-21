@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState } from 'react';
-import { useDatabase } from '../hooks/useDatabase';
 
 interface CityModalProps {
   isOpen: boolean;
@@ -10,39 +9,16 @@ interface CityModalProps {
 
 const CityModal: React.FC<CityModalProps> = ({ isOpen, onClose, onSelectCity }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const { getCities } = useDatabase();
-  const [cities, setCities] = useState<string[]>([]);
-  const [loadingCities, setLoadingCities] = useState(false);
-
-  // Load cities from database when modal opens
-  React.useEffect(() => {
-    if (isOpen) {
-      loadCities();
-    }
-  }, [isOpen, searchTerm]);
-
-  const loadCities = async () => {
-    try {
-      setLoadingCities(true);
-      const dbCities = await getCities(searchTerm);
-      setCities(dbCities.map(city => city.name));
-    } catch (error) {
-      console.error('Error loading cities:', error);
-      // Fallback to hardcoded cities
-      const fallbackCities = [
-        'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 
-        'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur'
-      ];
-      setCities(fallbackCities.filter(city => 
-        city.toLowerCase().includes(searchTerm.toLowerCase())
-      ));
-    } finally {
-      setLoadingCities(false);
-    }
-  };
+  
+  const allCities = [
+    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 
+    'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur',
+    'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam', 'Pimpri-Chinchwad',
+    'Patna', 'Vadodara'
+  ];
 
   // Filter cities based on search term
-  const filteredCities = cities.filter(city =>
+  const filteredCities = allCities.filter(city =>
     city.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -97,12 +73,7 @@ const CityModal: React.FC<CityModalProps> = ({ isOpen, onClose, onSelectCity }) 
             </div>
           </div>
           
-          {loadingCities ? (
-            <div className="loading-cities">
-              <div className="loading-spinner">⏳</div>
-              <p>Loading cities...</p>
-            </div>
-          ) : filteredCities.length === 0 ? (
+          {filteredCities.length === 0 ? (
             <div className="no-results">
               <span className="no-results-icon">🏙️</span>
               <p>No cities found matching "{searchTerm}"</p>

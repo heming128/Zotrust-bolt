@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
-import { useDatabase } from '../hooks/useDatabase';
-import { type Ad } from '../lib/supabase';
 import PostAdModal from './PostAdModal';
 
 interface MarketData {
@@ -37,7 +35,6 @@ interface P2PTradingProps {
 
 const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) => {
   const { account, isConnected } = useWeb3();
-  const { user, getAds, createAd } = useDatabase();
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
   const [selectedPayment, setSelectedPayment] = useState('Payment');
@@ -47,8 +44,6 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const [showPostAdModal, setShowPostAdModal] = useState(false);
   const [showTokenDropdown, setShowTokenDropdown] = useState(false);
   const [showMarketStats, setShowMarketStats] = useState(false);
-  const [dbAds, setDbAds] = useState<Ad[]>([]);
-  const [loadingAds, setLoadingAds] = useState(false);
 
   const marketData: MarketData = {
     bestBuyPrice: 87.99,
@@ -120,48 +115,11 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
     }
   ];
 
-  // Load ads from database
-  useEffect(() => {
-    loadAds();
-  }, [activeTab, selectedToken]);
-
-  const loadAds = async () => {
-    try {
-      setLoadingAds(true);
-      const targetAdType = activeTab === 'buy' ? 'sell' : 'buy';
-      const ads = await getAds({
-        adType: targetAdType,
-        token: selectedToken
-      });
-      setDbAds(ads);
-    } catch (error) {
-      console.error('Error loading ads:', error);
-    } finally {
-      setLoadingAds(false);
-    }
-  };
   // Filter traders based on active tab
   // If user wants to "buy", show "sell" ads (people selling to you)
   // If user wants to "sell", show "buy" ads (people buying from you)
   const getFilteredTraders = () => {
-    // Convert database ads to trader format
-    const dbTraders: Trader[] = dbAds.map(ad => ({
-      id: ad.id,
-      name: ad.user?.name || 'Anonymous User',
-      rating: ad.user?.rating || 5.0,
-      totalTrades: ad.user?.total_trades || 0,
-      isOnline: true, // You can add online status to database later
-      branch: ad.user?.is_verified ? 'Verified Trader' : 'Individual Trader',
-      location: ad.location || 'Location not specified',
-      price: ad.price,
-      available: ad.available_amount,
-      limit: { min: ad.min_limit, max: ad.max_limit },
-      paymentMethods: ad.payment_methods,
-      adType: ad.ad_type,
-      token: ad.token
-    }));
-
-    const allTraders = [...baseTraders, ...userAds, ...dbTraders];
+    const allTraders = [...baseTraders, ...userAds];
     const targetAdType = activeTab === 'buy' ? 'sell' : 'buy';
     return allTraders.filter(trader => 
       trader.adType === targetAdType && trader.token === selectedToken
@@ -176,35 +134,8 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   };
 
   const handleAdCreated = async (newAd: Trader) => {
-    try {
-      // Save to database if user exists
-      if (user) {
-        await createAd({
-          ad_type: newAd.adType || 'buy',
-          token: newAd.token as 'USDC' | 'USDT' || 'USDC',
-          price: newAd.price,
-          available_amount: newAd.available,
-          min_limit: newAd.limit.min,
-          max_limit: newAd.limit.max,
-          payment_methods: newAd.paymentMethods,
-          location: newAd.location,
-          is_active: true
-        });
-        
-        // Reload ads to show the new one
-        await loadAds();
-      } else {
-        // Fallback to local state if no database user
-        if (onAddUserAd) {
-          onAddUserAd(newAd);
-        }
-      }
-    } catch (error) {
-      console.error('Error creating ad:', error);
-      // Fallback to local state on error
-      if (onAddUserAd) {
-        onAddUserAd(newAd);
-      }
+    if (onAddUserAd) {
+      onAddUserAd(newAd);
     }
   };
 
@@ -377,12 +308,6 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
 
       {/* Traders List */}
       <div className="traders-grid">
-        {loadingAds && (
-          <div className="loading-ads">
-            <div className="loading-spinner">⏳</div>
-            <p>Loading ads...</p>
-          </div>
-        )}
         {traders.map((trader) => (
           <div 
             key={trader.id} 
