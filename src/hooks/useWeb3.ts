@@ -112,7 +112,7 @@ export const useWeb3 = () => {
 
   const checkConnection = async () => {
     try {
-      if (typeof window.ethereum !== 'undefined') {
+      if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await provider.listAccounts();
         
@@ -142,7 +142,7 @@ export const useWeb3 = () => {
   };
 
   const connectWallet = useCallback(async () => {
-    if (typeof window.ethereum === 'undefined') {
+    if (typeof window === 'undefined' || typeof window.ethereum === 'undefined') {
       setError('Please install MetaMask or use TrustWallet DApp browser!');
       return;
     }
@@ -176,8 +176,10 @@ export const useWeb3 = () => {
       fetchTokenBalances(provider, account, chainId);
 
       // Listen for account changes
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
+      if (window.ethereum) {
+        window.ethereum.on('accountsChanged', handleAccountsChanged);
+        window.ethereum.on('chainChanged', handleChainChanged);
+      }
 
     } catch (err: any) {
       setError(err.message || 'Failed to connect wallet');
@@ -205,7 +207,9 @@ export const useWeb3 = () => {
     }
     
     // Clear any cached connection data
-    localStorage.removeItem('walletConnected');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('walletConnected');
+    }
   }, []);
 
   const handleAccountsChanged = (accounts: string[]) => {
@@ -228,7 +232,7 @@ export const useWeb3 = () => {
   }, [web3State.provider, web3State.account, web3State.chainId, fetchTokenBalances]);
 
   const switchNetwork = async (chainId: number) => {
-    if (!window.ethereum) return;
+    if (typeof window === 'undefined' || !window.ethereum) return;
 
     try {
       await window.ethereum.request({

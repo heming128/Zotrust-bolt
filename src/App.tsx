@@ -6,7 +6,6 @@ import P2PTrading from './components/P2PTrading';
 import Profile from './components/Profile';
 import BottomNavigation from './components/BottomNavigation';
 import { useWeb3 } from './hooks/useWeb3';
-import './App.css';
 
 interface UserAd {
   id: string;
@@ -28,7 +27,6 @@ interface UserAd {
 }
 
 function App() {
-  const { isConnected } = useWeb3();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [userAds, setUserAds] = useState<UserAd[]>([]);
 

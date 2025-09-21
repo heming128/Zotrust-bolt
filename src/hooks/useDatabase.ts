@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, dbFunctions, type User, type Ad, type Trade } from '../lib/supabase';
+import { dbFunctions, type User, type Ad, type Trade } from '../lib/supabase';
 import { useWeb3 } from './useWeb3';
 
 export const useDatabase = () => {
@@ -87,7 +87,7 @@ export const useDatabase = () => {
       return ads;
     } catch (err: any) {
       setError(err.message);
-      throw err;
+      return []; // Return empty array on error
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,7 @@ export const useDatabase = () => {
       return trades;
     } catch (err: any) {
       setError(err.message);
-      throw err;
+      return []; // Return empty array on error
     } finally {
       setLoading(false);
     }
@@ -127,7 +127,24 @@ export const useDatabase = () => {
       return cities;
     } catch (err: any) {
       setError(err.message);
-      throw err;
+      // Return fallback cities on error
+      const fallbackCities = [
+        { id: '1', name: 'Mumbai', state: 'Maharashtra', country: 'India', is_active: true, trader_count: 0, created_at: '' },
+        { id: '2', name: 'Delhi', state: 'Delhi', country: 'India', is_active: true, trader_count: 0, created_at: '' },
+        { id: '3', name: 'Bangalore', state: 'Karnataka', country: 'India', is_active: true, trader_count: 0, created_at: '' },
+        { id: '4', name: 'Hyderabad', state: 'Telangana', country: 'India', is_active: true, trader_count: 0, created_at: '' },
+        { id: '5', name: 'Chennai', state: 'Tamil Nadu', country: 'India', is_active: true, trader_count: 0, created_at: '' },
+        { id: '6', name: 'Kolkata', state: 'West Bengal', country: 'India', is_active: true, trader_count: 0, created_at: '' },
+        { id: '7', name: 'Pune', state: 'Maharashtra', country: 'India', is_active: true, trader_count: 0, created_at: '' },
+        { id: '8', name: 'Ahmedabad', state: 'Gujarat', country: 'India', is_active: true, trader_count: 0, created_at: '' }
+      ];
+      
+      if (searchTerm) {
+        return fallbackCities.filter(city => 
+          city.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      return fallbackCities;
     }
   };
 
