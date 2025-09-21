@@ -431,11 +431,6 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
   const [paymentMethod, setPaymentMethod] = useState('UPI Transfer');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Early return if modal is not open or trader is null
-  if (!isOpen || !trader) {
-    return null;
-  }
-
   // Set default payment method safely
   React.useEffect(() => {
     if (isOpen && trader && trader.paymentMethods && trader.paymentMethods.length > 0) {
@@ -444,6 +439,11 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
       setPaymentMethod('UPI Transfer');
     }
   }, [isOpen, trader]);
+
+  // Early return if modal is not open or trader is null
+  if (!isOpen || !trader) {
+    return null;
+  }
 
   const handleSubmit = async () => {
     if (!amount || parseFloat(amount) <= 0) {
