@@ -341,24 +341,42 @@ const Dashboard: React.FC = () => {
         onSelectCity={handleCitySelect}
       />
 
-      {/* Fixed Bottom Action Buttons */}
-      <div className="dashboard-bottom-actions">
-        <button className="bottom-action-btn p2p-btn">
-          <span className="action-icon">🤝</span>
-          <span className="action-label">P2P</span>
-        </button>
-        <button className="bottom-action-btn trades-btn">
-          <span className="action-icon">📊</span>
-          <span className="action-label">Trades</span>
-        </button>
-        <button className="bottom-action-btn profile-btn">
-          <span className="action-icon">👤</span>
-          <span className="action-label">Profile</span>
-        </button>
-        <button className="bottom-action-btn request-btn">
-          <span className="action-icon">📝</span>
-          <span className="action-label">Request</span>
-        </button>
+      {/* Quick Actions Section */}
+      <div className="quick-actions-section">
+        <h3 className="section-title">Quick Actions</h3>
+        <div className="quick-actions-grid">
+          <button className="quick-action-btn p2p-action">
+            <div className="action-icon">🤝</div>
+            <div className="action-content">
+              <span className="action-title">P2P Trading</span>
+              <span className="action-desc">Buy & Sell crypto</span>
+            </div>
+          </button>
+          
+          <button className="quick-action-btn trades-action">
+            <div className="action-icon">📊</div>
+            <div className="action-content">
+              <span className="action-title">My Trades</span>
+              <span className="action-desc">View trade history</span>
+            </div>
+          </button>
+          
+          <button className="quick-action-btn profile-action">
+            <div className="action-icon">👤</div>
+            <div className="action-content">
+              <span className="action-title">Profile</span>
+              <span className="action-desc">Manage account</span>
+            </div>
+          </button>
+          
+          <button className="quick-action-btn request-action">
+            <div className="action-icon">📝</div>
+            <div className="action-content">
+              <span className="action-title">Trade Request</span>
+              <span className="action-desc">Create new request</span>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );
