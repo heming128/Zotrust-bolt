@@ -49,42 +49,40 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Connect Wallet Card */}
-      {!isConnected && (
+      {/* Connect Wallet Card - Always show at top */}
+      <div style={{
+        backgroundColor: '#4a6cf7',
+        borderRadius: '16px',
+        padding: '20px',
+        marginBottom: '20px',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '15px'
+      }}>
         <div style={{
-          backgroundColor: '#4a6cf7',
-          borderRadius: '16px',
-          padding: '20px',
-          marginBottom: '20px',
-          color: 'white',
+          cursor: 'pointer',
+          transition: 'transform 0.2s ease',
+          width: '48px',
+          height: '48px',
+          backgroundColor: 'rgba(255,255,255,0.2)',
+          borderRadius: '12px',
           display: 'flex',
           alignItems: 'center',
-          gap: '15px'
+          justifyContent: 'center',
+          fontSize: '24px'
         }}>
-          <div style={{
-            cursor: 'pointer',
-            transition: 'transform 0.2s ease',
-            width: '48px',
-            height: '48px',
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '24px'
-          }}>
-            💳
-          </div>
-          <div style={{ flex: 1 }}>
-            <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: '600' }}>
-              Connect Wallet
-            </h3>
-            <p style={{ margin: 0, fontSize: '14px', opacity: 0.9 }}>
-              Connect to start trading
-            </p>
-          </div>
+          💳
         </div>
-      )}
+        <div style={{ flex: 1 }}>
+          <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: '600' }}>
+            Connect Wallet
+          </h3>
+          <p style={{ margin: 0, fontSize: '14px', opacity: 0.9 }}>
+            Connect to start trading
+          </p>
+        </div>
+      </div>
 
       {/* USDC Balance Card */}
       <div style={{
