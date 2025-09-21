@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import P2PTrading from './components/P2PTrading';
+import Profile from './components/Profile';
 import BottomNavigation from './components/BottomNavigation';
 import { useWeb3 } from './hooks/useWeb3';
 import './App.css';
@@ -55,12 +56,7 @@ function App() {
           </div>
         );
       case 'profile':
-        return (
-          <div className="profile-section">
-            <h2>👤 Profile</h2>
-            <p>Profile settings coming soon</p>
-          </div>
-        );
+        return <Profile />;
       default:
         return <Dashboard />;
     }

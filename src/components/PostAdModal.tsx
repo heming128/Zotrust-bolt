@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useWeb3 } from '../hooks/useWeb3';
 
 interface PostAdModalProps {
   isOpen: boolean;
@@ -7,6 +8,7 @@ interface PostAdModalProps {
 }
 
 const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated }) => {
+  const { account } = useWeb3();
   const [step, setStep] = useState(1);
   const [adType, setAdType] = useState<'buy' | 'sell'>('buy');
   const [priceType, setPriceType] = useState<'fixed' | 'market'>('fixed');
@@ -21,14 +23,18 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated 
     if (step === 1) {
       setStep(2);
     } else {
+      // Get user profile from localStorage
+      const savedProfile = account ? localStorage.getItem(`profile_${account}`) : null;
+      const userProfile = savedProfile ? JSON.parse(savedProfile) : null;
+      
       // Create the ad
       const newAd = {
         id: Date.now().toString(),
-        name: 'You', // Current user
+        name: userProfile?.name || 'Anonymous User', // Use profile name or fallback
         rating: 5.0,
         totalTrades: 0,
         isOnline: true,
-        branch: 'Individual Trader',
+        branch: userProfile?.isVerified ? 'Verified Trader' : 'Individual Trader',
         location: 'Your Location',
         price: parseFloat(price),
         available: parseFloat(amount),
