@@ -303,6 +303,49 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
+      {/* P2P Trading Section */}
+      <div className="p2p-trading-section">
+        <div className="section-header">
+          <h3>🤝 P2P Trading</h3>
+          <span className="section-subtitle">Trade directly with other users</span>
+        </div>
+        
+        <div className="p2p-actions-grid">
+          <div className="p2p-action-card buy-card">
+            <div className="action-icon">📈</div>
+            <div className="action-content">
+              <h4>Buy Crypto</h4>
+              <p>Find sellers in your area</p>
+            </div>
+            <button className="action-btn buy-btn">Buy Now</button>
+          </div>
+          
+          <div className="p2p-action-card sell-card">
+            <div className="action-icon">📉</div>
+            <div className="action-content">
+              <h4>Sell Crypto</h4>
+              <p>Find buyers in your area</p>
+            </div>
+            <button className="action-btn sell-btn">Sell Now</button>
+          </div>
+        </div>
+        
+        <div className="p2p-stats">
+          <div className="stat-item">
+            <span className="stat-value">1,547</span>
+            <span className="stat-label">Active Orders</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">₹87.06</span>
+            <span className="stat-label">Best Price</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">24/7</span>
+            <span className="stat-label">Available</span>
+          </div>
+        </div>
+      </div>
+
       {/* Welcome Section */}
       <div className="welcome-section">
         <div className="welcome-content">
