@@ -6,6 +6,7 @@ const Dashboard: React.FC = () => {
   const { 
     account, 
     isConnected, 
+    isConnecting,
     balance, 
     tokenBalances, 
     isLoadingBalances,
