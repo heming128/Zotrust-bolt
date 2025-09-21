@@ -43,6 +43,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
   const [showPostAdModal, setShowPostAdModal] = useState(false);
   const [showTokenDropdown, setShowTokenDropdown] = useState(false);
+  const [showMarketStats, setShowMarketStats] = useState(false);
 
   const marketData: MarketData = {
     bestBuyPrice: 87.99,
@@ -180,7 +181,13 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
       {/* Market Overview Card */}
       <div className="market-overview-card">
         <div className="market-header">
-          <span className="market-title">Market Overview</span>
+          <button 
+            className="market-overview-btn"
+            onClick={() => setShowMarketStats(!showMarketStats)}
+          >
+            <span className="market-title">Market Overview</span>
+            <span className={`overview-arrow ${showMarketStats ? 'open' : ''}`}>▼</span>
+          </button>
           <div className="token-selector" onClick={() => setShowTokenDropdown(!showTokenDropdown)}>
             <span className="token-icon">{selectedToken === 'USDC' ? '🔵' : '🟢'}</span>
             <span>{selectedToken}</span>
@@ -219,24 +226,26 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
           </div>
         </div>
         
-        <div className="market-stats">
-          <div className="stat-item">
-            <div className="stat-label">📈 Best Buy Price</div>
-            <div className="stat-value buy-price">₹{marketData.bestBuyPrice}</div>
+        {showMarketStats && (
+          <div className="market-stats">
+            <div className="stat-item">
+              <div className="stat-label">📈 Best Buy Price</div>
+              <div className="stat-value buy-price">₹{marketData.bestBuyPrice}</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-label">📉 Best Sell Price</div>
+              <div className="stat-value sell-price">₹{marketData.bestSellPrice}</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-label">📊 24h Volume</div>
+              <div className="stat-value">₹{marketData.volume24h}Cr</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-label">📋 Active Orders</div>
+              <div className="stat-value">{marketData.activeOrders.toLocaleString()}</div>
+            </div>
           </div>
-          <div className="stat-item">
-            <div className="stat-label">📉 Best Sell Price</div>
-            <div className="stat-value sell-price">₹{marketData.bestSellPrice}</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-label">📊 24h Volume</div>
-            <div className="stat-value">₹{marketData.volume24h}Cr</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-label">📋 Active Orders</div>
-            <div className="stat-value">{marketData.activeOrders.toLocaleString()}</div>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Trading Controls */}

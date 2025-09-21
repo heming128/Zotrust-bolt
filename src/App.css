@@ -1900,10 +1900,35 @@ body {
   margin-bottom: 1rem;
 }
 
+.market-overview-btn {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.market-overview-btn:hover {
+  color: #4f46e5;
+}
+
 .market-title {
   font-size: 1rem;
   font-weight: 600;
   color: #333;
+}
+
+.overview-arrow {
+  font-size: 0.8rem;
+  color: #666;
+  transition: transform 0.3s ease;
+}
+
+.overview-arrow.open {
+  transform: rotate(180deg);
 }
 
 .token-selector {
@@ -1916,6 +1941,18 @@ body {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
   font-size: 0.9rem;
   position: relative;
 }
