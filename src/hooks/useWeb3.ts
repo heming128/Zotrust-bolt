@@ -15,7 +15,7 @@ const ERC20_ABI = [
 const TOKEN_ADDRESSES = {
   // Ethereum Mainnet
   1: {
-    USDC: '0xA0b86a33E6441b8435b662303c0f479c7e2f9f0D', // Circle USDC
+    USDC: '0xA0b86a33E6441b8435b662303c0f479c7e2f9f0D',
     USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7'
   },
   // BSC Mainnet

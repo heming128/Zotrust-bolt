@@ -1,4 +1,5 @@
 import React from 'react';
+import { useWeb3 } from '../hooks/useWeb3';
 import CityModal from './CityModal';
 
 interface TraderAd {
@@ -30,7 +31,7 @@ const Dashboard: React.FC = () => {
     connectWallet, 
     disconnectWallet,
     refreshTokenBalances 
-  } = {};
+  } = useWeb3();
   const [selectedCity, setSelectedCity] = React.useState<string | null>(null);
   const [showCityModal, setShowCityModal] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState<'USDC' | 'USDT'>('USDC');
