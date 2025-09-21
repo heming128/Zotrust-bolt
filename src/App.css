@@ -1946,16 +1946,26 @@ body {
 }
 
 @keyframes slideDown {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  font-size: 0.9rem;
   position: relative;
+  margin-top: 0.5rem;
+}
+
+.token-selector-btn {
+  background: none;
+  border: none;
+  font-weight: 600;
+  color: #4f46e5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.token-selector-btn:hover {
+  color: #3730a3;
 }
 
 .dropdown-arrow {
@@ -2071,7 +2081,7 @@ body {
 
 .token-dropdown {
   position: absolute;
-  top: calc(100% + 5px);
+  top: calc(100% + 8px);
   right: 0;
   background: #fff;
   border: 2px solid #e5e7eb;
@@ -2079,9 +2089,8 @@ body {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   z-index: 10;
   min-width: 160px;
-  margin-top: 0.5rem;
   overflow: hidden;
-  margin-top: 5px;
+  animation: slideDown 0.2s ease-out;
 }
 
 .token-option {
@@ -2109,6 +2118,7 @@ body {
   background: #f0f9ff;
   color: #4f46e5;
   font-weight: 600;
+  border-left: 3px solid #4f46e5;
   font-weight: 600;
 }
 

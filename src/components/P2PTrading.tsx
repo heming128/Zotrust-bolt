@@ -153,12 +153,16 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (showTokenDropdown) {
+      const target = event.target as HTMLElement;
+      if (showTokenDropdown && !target.closest('.token-selector')) {
         setShowTokenDropdown(false);
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
+    if (showTokenDropdown) {
+      document.addEventListener('click', handleClickOutside);
+    }
+    
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
@@ -202,22 +206,24 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
             <span className="market-title">Market Overview</span>
             <span className={`overview-arrow ${showMarketStats ? 'open' : ''}`}>▼</span>
           </button>
-          <div className="token-selector" onClick={(e) => {
-            e.stopPropagation();
-            setShowTokenDropdown(!showTokenDropdown);
-          }}>
+          <div className="token-selector">
+            <button 
+              className="token-selector-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowTokenDropdown(!showTokenDropdown);
+              }}
+            >
             <span className="token-icon">{selectedToken === 'USDC' ? '🔵' : '🟢'}</span>
             <span>{selectedToken}</span>
             <span className="dropdown-arrow">▼</span>
-            
+            </button>
+
             {showTokenDropdown && (
               <div className="token-dropdown">
                 <div 
                   className={`token-option ${selectedToken === 'USDC' ? 'active' : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleTokenSelect('USDC');
-                  }}
+                  onClick={() => handleTokenSelect('USDC')}
                 >
                   <span className="token-icon">🔵</span>
                   <div className="token-details">
@@ -227,10 +233,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
                 </div>
                 <div 
                   className={`token-option ${selectedToken === 'USDT' ? 'active' : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleTokenSelect('USDT');
-                  }}
+                  onClick={() => handleTokenSelect('USDT')}
                 >
                   <span className="token-icon">🟢</span>
                   <div className="token-details">
