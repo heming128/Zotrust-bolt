@@ -32,6 +32,11 @@ const TOKEN_ADDRESSES = {
   5: {
     USDC: '0x07865c6E87B9F70255377e024ace6630C1Eaa37F',
     USDT: '0x509Ee0d083DdF8AC028f2a56731412edD63223B9'
+  },
+  // BSC Testnet
+  97: {
+    USDC: '0x64544969ed7EBf5f083679233325356EbE738930',
+    USDT: '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd'
   }
 };
 
@@ -75,7 +80,7 @@ export const useWeb3 = () => {
       
       const tokenAddresses = TOKEN_ADDRESSES[chainId as keyof typeof TOKEN_ADDRESSES];
       if (!tokenAddresses) {
-        // If network not supported, set balances to 0
+        console.log(`Network ${chainId} not supported for token balances`);
         setWeb3State(prev => ({ 
           ...prev, 
           tokenBalances: { USDC: '0.00', USDT: '0.00' },
@@ -84,6 +89,8 @@ export const useWeb3 = () => {
         return;
       }
 
+      console.log(`Fetching token balances for chain ${chainId}:`, tokenAddresses);
+      
       const usdcContract = new ethers.Contract(tokenAddresses.USDC, ERC20_ABI, provider);
       const usdtContract = new ethers.Contract(tokenAddresses.USDT, ERC20_ABI, provider);
 
@@ -97,6 +104,12 @@ export const useWeb3 = () => {
       const formattedUSDC = ethers.formatUnits(usdcBalance, usdcDecimals);
       const formattedUSDT = ethers.formatUnits(usdtBalance, usdtDecimals);
 
+      console.log('Token balances fetched:', {
+        USDC: formattedUSDC,
+        USDT: formattedUSDT,
+        chainId
+      });
+
       setWeb3State(prev => ({
         ...prev,
         tokenBalances: {
@@ -107,6 +120,9 @@ export const useWeb3 = () => {
       }));
     } catch (err) {
       console.error('Error fetching token balances:', err);
+      // Show actual error in console for debugging
+      console.error('Chain ID:', chainId);
+      console.error('Account:', account);
       setWeb3State(prev => ({ 
         ...prev, 
         tokenBalances: { USDC: '0.00', USDT: '0.00' },
@@ -174,6 +190,13 @@ export const useWeb3 = () => {
       const balance = await provider.getBalance(account);
       const chainId = Number(network.chainId);
 
+      console.log('Wallet connected:', {
+        account,
+        chainId,
+        network: network.name,
+        balance: ethers.formatEther(balance)
+      });
+
       setWeb3State({
         account,
         chainId,
@@ -186,7 +209,9 @@ export const useWeb3 = () => {
       });
 
       // Fetch token balances
-      fetchTokenBalances(provider, account, chainId);
+      setTimeout(() => {
+        fetchTokenBalances(provider, account, chainId);
+      }, 1000); // Small delay to ensure connection is stable
 
       // Listen for account changes
       window.ethereum.on('accountsChanged', handleAccountsChanged);
@@ -195,6 +220,7 @@ export const useWeb3 = () => {
     } catch (err: any) {
       setError(err.message || 'Failed to connect wallet');
       setWeb3State(prev => ({ ...prev, isConnecting: false }));
+      console.error('Wallet connection error:', err);
     }
   }, [fetchTokenBalances, isClient]);
 

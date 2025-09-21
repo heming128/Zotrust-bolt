@@ -231,11 +231,16 @@ const Dashboard: React.FC = () => {
               color: '#333',
               marginBottom: '5px'
             }}>
-              {isLoadingBalances ? 'Loading...' : `${tokenBalances.USDC} USDC`}
+              {isLoadingBalances ? '⏳ Loading...' : `${tokenBalances.USDC} USDC`}
             </div>
             <div style={{ fontSize: '16px', color: '#666' }}>
-              ≈ ${isLoadingBalances ? '0.00' : tokenBalances.USDC} USD
+              ≈ ${isLoadingBalances ? '0.00' : (parseFloat(tokenBalances.USDC) * 1.00).toFixed(2)} USD
             </div>
+            {!isLoadingBalances && parseFloat(tokenBalances.USDC) === 0 && (
+              <div style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>
+                💡 No USDC found on this network
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -283,11 +288,16 @@ const Dashboard: React.FC = () => {
               color: '#333',
               marginBottom: '5px'
             }}>
-              {isLoadingBalances ? 'Loading...' : `${tokenBalances.USDT} USDT`}
+              {isLoadingBalances ? '⏳ Loading...' : `${tokenBalances.USDT} USDT`}
             </div>
             <div style={{ fontSize: '16px', color: '#666' }}>
-              ≈ ${isLoadingBalances ? '0.00' : tokenBalances.USDT} USD
+              ≈ ${isLoadingBalances ? '0.00' : (parseFloat(tokenBalances.USDT) * 1.00).toFixed(2)} USD
             </div>
+            {!isLoadingBalances && parseFloat(tokenBalances.USDT) === 0 && (
+              <div style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>
+                💡 No USDT found on this network
+              </div>
+            )}
           </div>
         </div>
       )}
