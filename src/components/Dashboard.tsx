@@ -25,6 +25,7 @@ const Dashboard: React.FC = () => {
   const { account, isConnected, balance, connectWallet, disconnectWallet } = useWeb3();
   const [selectedCity, setSelectedCity] = React.useState<string | null>(null);
   const [showCityModal, setShowCityModal] = React.useState(false);
+  const [selectedToken, setSelectedToken] = React.useState<'USDC' | 'USDT'>('USDC');
 
   // Mock data for nearby traders based on selected city
   const getNearbyTraders = (city: string): TraderAd[] => {
@@ -141,9 +142,23 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* USDC Balance Card */}
-      <div className="usdc-balance-card">
+      <div className="token-balance-card">
         <div className="balance-header">
-          <span className="balance-title">USDC Balance</span>
+          <div className="balance-title-section">
+            <span className="balance-title">{selectedToken} Balance</span>
+            <div className="token-selector-dropdown">
+              <button 
+                className="token-selector-btn"
+                onClick={() => setSelectedToken(selectedToken === 'USDC' ? 'USDT' : 'USDC')}
+              >
+                <span className="token-icon">
+                  {selectedToken === 'USDC' ? '🔵' : '🟢'}
+                </span>
+                <span className="token-name">{selectedToken}</span>
+                <span className="dropdown-arrow">⌄</span>
+              </button>
+            </div>
+          </div>
           <button className="refresh-button">
             <span>🔄</span>
           </button>
