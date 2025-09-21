@@ -2033,7 +2033,7 @@ body {
 
 .token-dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 5px);
   right: 0;
   background: #fff;
   border: 2px solid #e5e7eb;
@@ -2043,6 +2043,7 @@ body {
   min-width: 160px;
   margin-top: 0.5rem;
   overflow: hidden;
+  margin-top: 5px;
 }
 
 .token-option {
@@ -2061,11 +2062,13 @@ body {
 
 .token-option:hover {
   background: #f9fafb;
+  transform: translateY(-1px);
 }
 
 .token-option.active {
   background: #f0f9ff;
   color: #4f46e5;
+  font-weight: 600;
 }
 
 .token-details {
