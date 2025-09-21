@@ -22,7 +22,16 @@ interface TraderAd {
 }
 
 const Dashboard: React.FC = () => {
-  const { account, isConnected, balance, connectWallet, disconnectWallet } = useWeb3();
+  const { 
+    account, 
+    isConnected, 
+    balance, 
+    tokenBalances, 
+    isLoadingBalances,
+    connectWallet, 
+    disconnectWallet,
+    refreshTokenBalances 
+  } = useWeb3();
   const [selectedCity, setSelectedCity] = React.useState<string | null>(null);
   const [showCityModal, setShowCityModal] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState<'USDC' | 'USDT'>('USDC');
@@ -162,10 +171,21 @@ const Dashboard: React.FC = () => {
           <button className="refresh-button">
             <span>🔄</span>
           </button>
+          <button 
+            className="refresh-button"
+            onClick={refreshTokenBalances}
+            disabled={isLoadingBalances}
+          >
+            <span>{isLoadingBalances ? '⏳' : '🔄'}</span>
+          </button>
         </div>
         <div className="balance-amount">
-          <span className="main-amount">$0.00</span>
-          <span className="usd-equivalent">≈ $0.00 USD</span>
+          <span className="main-amount">
+            {isLoadingBalances ? 'Loading...' : `${tokenBalances[selectedToken]} ${selectedToken}`}
+          </span>
+          <span className="usd-equivalent">
+            ≈ ${isLoadingBalances ? '0.00' : tokenBalances[selectedToken]} USD
+          </span>
         </div>
       </div>
 
