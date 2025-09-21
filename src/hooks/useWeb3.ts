@@ -107,7 +107,9 @@ export const useWeb3 = () => {
 
   // Check if wallet is already connected
   useEffect(() => {
-    checkConnection();
+    if (typeof window !== 'undefined') {
+      checkConnection();
+    }
   }, []);
 
   const checkConnection = async () => {
@@ -185,7 +187,7 @@ export const useWeb3 = () => {
       setError(err.message || 'Failed to connect wallet');
       setWeb3State(prev => ({ ...prev, isConnecting: false }));
     }
-  }, []);
+  }, [fetchTokenBalances]);
 
   const disconnectWallet = useCallback(() => {
     setWeb3State({
@@ -201,7 +203,7 @@ export const useWeb3 = () => {
     setError(null);
 
     // Remove listeners
-    if (window.ethereum) {
+    if (typeof window !== 'undefined' && window.ethereum) {
       window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
       window.ethereum.removeListener('chainChanged', handleChainChanged);
     }
