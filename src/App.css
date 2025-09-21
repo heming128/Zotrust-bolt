@@ -1851,24 +1851,88 @@ body {
   font-size: 0.9rem;
 }
 
-.asset-selector, .fiat-selector {
+.token-selection-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.token-selection-btn {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.token-selection-btn:hover {
+  border-color: #ccc;
+  transform: translateY(-1px);
+}
+
+.token-selection-btn.active {
+  border-color: #4CAF50;
+  background: #f8fff8;
+}
+
+.token-icon {
+  font-size: 24px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f5f5f5;
+}
+
+.token-info {
+  flex: 1;
+}
+
+.token-name {
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.token-desc {
+  display: block;
+  font-size: 12px;
+  color: #666;
+}
+
+.token-price {
+  font-weight: 600;
+  color: #4CAF50;
+  font-size: 14px;
+}
+
+.fiat-selector {
   background: white;
   color: #333;
   padding: 1rem;
   border-radius: 10px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+.fiat-selector:hover {
   cursor: pointer;
 }
 
-.asset-info, .fiat-info {
+.fiat-info {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.asset-icon {
+.fiat-icon {
   width: 40px;
   height: 40px;
   background: #f59e0b;
@@ -1891,22 +1955,22 @@ body {
   font-size: 1.2rem;
 }
 
-.asset-details, .fiat-details {
+.fiat-details {
   display: flex;
   flex-direction: column;
 }
 
-.asset-name, .fiat-name {
+.fiat-name {
   font-weight: 600;
   color: #333;
 }
 
-.asset-desc, .fiat-desc {
+.fiat-desc {
   font-size: 0.9rem;
   color: #666;
 }
 
-.asset-price, .fiat-symbol {
+.fiat-symbol {
   display: flex;
   align-items: center;
   gap: 0.5rem;

@@ -5,13 +5,13 @@ interface PostAdModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdCreated: (ad: any) => void;
-  selectedToken?: 'USDC' | 'USDT';
 }
 
-const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated, selectedToken = 'USDC' }) => {
+const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated }) => {
   const { account } = useWeb3();
   const [step, setStep] = useState(1);
   const [adType, setAdType] = useState<'buy' | 'sell'>('buy');
+  const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
   const [priceType, setPriceType] = useState<'fixed' | 'market'>('fixed');
   const [price, setPrice] = useState('87.06');
   const [amount, setAmount] = useState('1000');
@@ -54,6 +54,7 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated,
       // Reset form
       setStep(1);
       setAdType('buy');
+      setSelectedToken('USDC');
       setPriceType('fixed');
       setPrice('87.06');
       setAmount('1000');
@@ -74,6 +75,7 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated,
     // Reset form when closing
     setStep(1);
     setAdType('buy');
+    setSelectedToken('USDC');
     setPriceType('fixed');
     setPrice('87.06');
     setAmount('1000');
@@ -140,18 +142,32 @@ const PostAdModal: React.FC<PostAdModalProps> = ({ isOpen, onClose, onAdCreated,
             {/* Asset Selection */}
             <div className="form-section">
               <h4>Asset</h4>
-              <div className="asset-selector">
-                <div className="asset-info">
-                  <div className="asset-icon">{selectedToken === 'USDC' ? 'U' : 'T'}</div>
-                  <div className="asset-details">
-                    <span className="asset-name">{selectedToken}</span>
-                    <span className="asset-desc">{selectedToken === 'USDC' ? 'USD Coin' : 'Tether USD'}</span>
+              <div className="token-selection-grid">
+                <button
+                  type="button"
+                  className={`token-selection-btn ${selectedToken === 'USDC' ? 'active' : ''}`}
+                  onClick={() => setSelectedToken('USDC')}
+                >
+                  <div className="token-icon usdc">🔵</div>
+                  <div className="token-info">
+                    <span className="token-name">USDC</span>
+                    <span className="token-desc">USD Coin</span>
                   </div>
-                </div>
-                <div className="asset-price">
-                  <span>₹87.06</span>
-                  <span className="dropdown-arrow">▼</span>
-                </div>
+                  <div className="token-price">₹87.06</div>
+                </button>
+                
+                <button
+                  type="button"
+                  className={`token-selection-btn ${selectedToken === 'USDT' ? 'active' : ''}`}
+                  onClick={() => setSelectedToken('USDT')}
+                >
+                  <div className="token-icon usdt">🟢</div>
+                  <div className="token-info">
+                    <span className="token-name">USDT</span>
+                    <span className="token-desc">Tether USD</span>
+                  </div>
+                  <div className="token-price">₹87.15</div>
+                </button>
               </div>
             </div>
 

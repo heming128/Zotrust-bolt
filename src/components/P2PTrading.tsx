@@ -396,7 +396,6 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
         isOpen={showPostAdModal}
         onClose={() => setShowPostAdModal(false)}
         onAdCreated={handleAdCreated}
-        selectedToken={selectedToken}
       />
 
       {/* Amount Input Modal */}
