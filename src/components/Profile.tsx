@@ -123,7 +123,6 @@ const Profile: React.FC = () => {
             {account?.slice(0, 6)}...{account?.slice(-4)}
           </p>
         </div>
-        {user?.is_verified && (
         {profile?.is_verified && (
           <div className="verification-badge">
             <span className="verified-icon">✅</span>
@@ -244,11 +243,11 @@ const Profile: React.FC = () => {
         <h3>Trading Statistics</h3>
         <div className="stats-grid">
           <div className="stat-item">
-            <div className="stat-value">0</div>
+            <div className="stat-value">{profile?.total_trades || 0}</div>
             <div className="stat-label">Total Trades</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">0%</div>
+            <div className="stat-value">{profile?.total_trades ? '100%' : '0%'}</div>
             <div className="stat-label">Success Rate</div>
           </div>
           <div className="stat-item">
@@ -256,7 +255,7 @@ const Profile: React.FC = () => {
             <div className="stat-label">Active Ads</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">New</div>
+            <div className="stat-value">{profile?.total_trades > 10 ? 'Pro' : 'New'}</div>
             <div className="stat-label">Trader Level</div>
           </div>
         </div>
