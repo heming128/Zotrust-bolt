@@ -30,6 +30,7 @@ const Dashboard: React.FC = () => {
     connectWallet, 
     disconnectWallet,
     refreshTokenBalances 
+  } = {};
   const [selectedCity, setSelectedCity] = React.useState<string | null>(null);
   const [showCityModal, setShowCityModal] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState<'USDC' | 'USDT'>('USDC');
