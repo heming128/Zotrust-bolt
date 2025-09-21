@@ -85,30 +85,6 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Error Display */}
-      {error && (
-        <div style={{
-          backgroundColor: '#fee2e2',
-          borderRadius: '12px',
-          padding: '16px',
-          marginBottom: '20px',
-          border: '1px solid #fecaca',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px'
-        }}>
-          <span style={{ fontSize: '20px' }}>⚠️</span>
-          <div>
-            <h4 style={{ margin: '0 0 4px 0', color: '#dc2626', fontSize: '14px', fontWeight: '600' }}>
-              Connection Error
-            </h4>
-            <p style={{ margin: 0, color: '#991b1b', fontSize: '13px' }}>
-              {error}
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* USDC Balance Card */}
       <div style={{
         backgroundColor: '#4a6cf7',
