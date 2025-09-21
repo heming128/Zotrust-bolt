@@ -1942,6 +1942,7 @@ body {
   align-items: center;
   gap: 0.4rem;
   animation: slideDown 0.3s ease-out;
+  margin-top: 0.5rem;
 }
 
 @keyframes slideDown {
@@ -2091,6 +2092,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   border-bottom: 1px solid #f1f5f9;
+  background: #fff;
 }
 
 .token-option:last-child {
@@ -2098,7 +2100,8 @@ body {
 }
 
 .token-option:hover {
-  background: #f9fafb;
+  background: #f0f9ff;
+  color: #4f46e5;
   transform: translateY(-1px);
 }
 
@@ -2106,12 +2109,14 @@ body {
   background: #f0f9ff;
   color: #4f46e5;
   font-weight: 600;
+  font-weight: 600;
 }
 
 .token-details {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+  flex: 1;
 }
 
 .token-name {

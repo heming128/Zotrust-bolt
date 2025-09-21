@@ -150,6 +150,20 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
     setShowTokenDropdown(false);
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showTokenDropdown) {
+        setShowTokenDropdown(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showTokenDropdown]);
+
   return (
     <div className="p2p-trading-container">
       {/* Header with Buy/Sell Tabs */}
@@ -188,7 +202,10 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
             <span className="market-title">Market Overview</span>
             <span className={`overview-arrow ${showMarketStats ? 'open' : ''}`}>▼</span>
           </button>
-          <div className="token-selector" onClick={() => setShowTokenDropdown(!showTokenDropdown)}>
+          <div className="token-selector" onClick={(e) => {
+            e.stopPropagation();
+            setShowTokenDropdown(!showTokenDropdown);
+          }}>
             <span className="token-icon">{selectedToken === 'USDC' ? '🔵' : '🟢'}</span>
             <span>{selectedToken}</span>
             <span className="dropdown-arrow">▼</span>
