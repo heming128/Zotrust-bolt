@@ -68,89 +68,8 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-// Safe Web3 Hook with Error Handling
-const useWeb3 = () => {
-  const [state, setState] = useState({
-    account: null as string | null,
-    isConnected: false,
-    isConnecting: false,
-    balance: '0.00',
-    tokenBalances: { USDC: '0.00', USDT: '0.00' },
-    isLoadingBalances: false,
-    chainId: null as number | null,
-    error: null as string | null
-  });
-
-  const connectWallet = async () => {
-    try {
-      setState(prev => ({ ...prev, isConnecting: true, error: null }));
-      
-      // Check if window.ethereum exists
-      if (typeof window === 'undefined' || !window.ethereum) {
-        throw new Error('Please install MetaMask or use TrustWallet DApp browser!');
-      }
-
-      // Request account access
-      const accounts = await window.ethereum.request({ 
-        method: 'eth_requestAccounts' 
-      });
-      
-      if (accounts && accounts.length > 0) {
-        setState(prev => ({
-          ...prev,
-          account: accounts[0],
-          isConnected: true,
-          isConnecting: false,
-          balance: '0.125', // Mock balance for now
-          tokenBalances: { USDC: '1,250.00', USDT: '850.00' },
-          chainId: 1,
-          error: null
-        }));
-      }
-    } catch (error: any) {
-      console.error('Wallet connection error:', error);
-      setState(prev => ({
-        ...prev,
-        isConnecting: false,
-        error: error.message || 'Failed to connect wallet'
-      }));
-    }
-  };
-
-  const disconnectWallet = () => {
-    setState({
-      account: null,
-      isConnected: false,
-      isConnecting: false,
-      balance: '0.00',
-      tokenBalances: { USDC: '0.00', USDT: '0.00' },
-      isLoadingBalances: false,
-      chainId: null,
-      error: null
-    });
-  };
-
-  const refreshTokenBalances = () => {
-    setState(prev => ({ ...prev, isLoadingBalances: true }));
-    setTimeout(() => {
-      setState(prev => ({ 
-        ...prev, 
-        isLoadingBalances: false,
-        tokenBalances: { 
-          USDC: (Math.random() * 1000 + 500).toFixed(2), 
-          USDT: (Math.random() * 1000 + 300).toFixed(2) 
-        }
-      }));
-    }, 1000);
-  };
-
-  return {
-    ...state,
-    connectWallet,
-    disconnectWallet,
-    refreshTokenBalances
-  };
-};
+import { useWeb3 } from './hooks/useWeb3';
+import { useDatabase } from './hooks/useDatabase';
 
 // Dashboard Component
 const Dashboard: React.FC = () => {
@@ -164,11 +83,16 @@ const Dashboard: React.FC = () => {
     disconnectWallet,
     refreshTokenBalances,
     error,
-    isConnecting
+    isConnecting,
+    chainId
   } = useWeb3();
+  const { getCities } = useDatabase();
   
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [showCityModal, setShowCityModal] = useState(false);
+  const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
+  const [cities, setCities] = useState<string[]>([]);
+  const [loadingCities, setLoadingCities] = useState(false);
 
   // Load saved city on mount
   React.useEffect(() => {
@@ -198,10 +122,34 @@ const Dashboard: React.FC = () => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  const cities = [
-    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 
-    'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur'
-  ];
+  const getNetworkName = (chainId: number | null) => {
+    switch (chainId) {
+      case 1: return 'Ethereum Mainnet';
+      case 56: return 'BSC Mainnet';
+      case 137: return 'Polygon';
+      case 5: return 'Goerli Testnet';
+      case 97: return 'BSC Testnet';
+      default: return `Chain ID: ${chainId}`;
+    }
+  };
+
+  // Load cities from database
+  const loadCities = async () => {
+    try {
+      setLoadingCities(true);
+      const dbCities = await getCities();
+      setCities(dbCities.map(city => city.name));
+    } catch (error) {
+      console.error('Error loading cities:', error);
+      // Fallback cities
+      setCities([
+        'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 
+        'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur'
+      ]);
+    } finally {
+      setLoadingCities(false);
+    }
+  };
 
   const nearbyTraders = [
     { name: 'Priya Sharma', rating: 4.9, trades: 180, price: 87.06, available: 750 },
@@ -263,7 +211,19 @@ const Dashboard: React.FC = () => {
       <div className="token-balance-card">
         <div className="balance-header">
           <div className="balance-title-section">
-            <span className="balance-title">USDC Balance</span>
+            <span className="balance-title">{selectedToken} Balance</span>
+            <div className="token-selector-dropdown">
+              <button 
+                className="token-selector-btn"
+                onClick={() => setSelectedToken(selectedToken === 'USDC' ? 'USDT' : 'USDC')}
+              >
+                <span className="token-icon">
+                  {selectedToken === 'USDC' ? '🔵' : '🟢'}
+                </span>
+                <span className="token-name">{selectedToken}</span>
+                <span className="dropdown-arrow">⌄</span>
+              </button>
+            </div>
           </div>
           <button 
             className="refresh-button"
@@ -275,12 +235,25 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="balance-amount">
           <span className="main-amount">
-            {isLoadingBalances ? 'Loading...' : `${tokenBalances.USDC} USDC`}
+            {isLoadingBalances ? 'Loading...' : `${tokenBalances[selectedToken]} ${selectedToken}`}
           </span>
           <span className="usd-equivalent">
-            ≈ ${isLoadingBalances ? '0.00' : tokenBalances.USDC} USD
+            ≈ ${isLoadingBalances ? '0.00' : tokenBalances[selectedToken]} USD
           </span>
         </div>
+        {isConnected && chainId && (
+          <div style={{ 
+            marginTop: '1rem', 
+            fontSize: '0.9rem', 
+            opacity: 0.8,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span>Network: {getNetworkName(chainId)}</span>
+            <span>ETH: {balance ? parseFloat(balance).toFixed(4) : '0.0000'}</span>
+          </div>
+        )}
       </div>
 
       {/* City Selection */}
@@ -295,7 +268,10 @@ const Dashboard: React.FC = () => {
           </div>
           <button 
             className="select-city-button"
-            onClick={() => setShowCityModal(true)}
+            onClick={() => {
+              setShowCityModal(true);
+              loadCities();
+            }}
           >
             <span>🏢</span>
             Select City
@@ -314,7 +290,10 @@ const Dashboard: React.FC = () => {
           </div>
           <button 
             className="change-city-button"
-            onClick={() => setShowCityModal(true)}
+            onClick={() => {
+              setShowCityModal(true);
+              loadCities();
+            }}
           >
             Change
           </button>
@@ -422,17 +401,24 @@ const Dashboard: React.FC = () => {
                 Choose your city to find nearby traders in your area
               </p>
               
-              <div className="cities-grid">
-                {cities.map((city) => (
-                  <button
-                    key={city}
-                    className="city-option"
-                    onClick={() => handleCitySelect(city)}
-                  >
-                    📍 {city}
-                  </button>
-                ))}
-              </div>
+              {loadingCities ? (
+                <div className="loading-cities">
+                  <div className="loading-spinner">⏳</div>
+                  <p>Loading cities...</p>
+                </div>
+              ) : (
+                <div className="cities-grid">
+                  {cities.map((city) => (
+                    <button
+                      key={city}
+                      className="city-option"
+                      onClick={() => handleCitySelect(city)}
+                    >
+                      📍 {city}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
