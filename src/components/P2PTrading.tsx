@@ -116,8 +116,8 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   ];
 
   // Filter traders based on active tab
-  // If user is on "buy" tab, show "sell" ads (users who want to sell)
-  // If user is on "sell" tab, show "buy" ads (users who want to buy)
+  // If user wants to "buy", show "sell" ads (people selling to you)
+  // If user wants to "sell", show "buy" ads (people buying from you)
   const getFilteredTraders = () => {
     const allTraders = [...baseTraders, ...userAds];
     const targetAdType = activeTab === 'buy' ? 'sell' : 'buy';
@@ -293,10 +293,16 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
         </div>
         
         <div className="buy-sell-buttons">
-          <button className={`trade-btn buy-btn ${activeTab === 'buy' ? 'active' : ''}`}>
+          <button 
+            className={`trade-btn buy-btn ${activeTab === 'buy' ? 'active' : ''}`}
+            onClick={() => setActiveTab('buy')}
+          >
             Buy {selectedToken}
           </button>
-          <button className={`trade-btn sell-btn ${activeTab === 'sell' ? 'active' : ''}`}>
+          <button 
+            className={`trade-btn sell-btn ${activeTab === 'sell' ? 'active' : ''}`}
+            onClick={() => setActiveTab('sell')}
+          >
             Sell {selectedToken}
           </button>
         </div>
@@ -381,7 +387,12 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
         <div className="empty-traders">
           <div className="empty-icon">🔍</div>
           <h3>No {activeTab === 'buy' ? 'Sellers' : 'Buyers'} Found</h3>
-          <p>No active {selectedToken} {activeTab === 'buy' ? 'sell' : 'buy'} ads available right now.</p>
+          <p>
+            {activeTab === 'buy' 
+              ? `No one is selling ${selectedToken} right now.` 
+              : `No one is buying ${selectedToken} right now.`
+            }
+          </p>
           <button 
             className="post-ad-btn"
             onClick={handlePostAdClick}
