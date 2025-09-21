@@ -564,6 +564,12 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
 
   if (!isOpen || !trader) return null;
 
+  // Reset form when modal opens
+  React.useEffect(() => {
+    if (isOpen && trader) {
+      setPaymentMethod(trader.paymentMethods[0] || 'UPI Transfer');
+    }
+  }, [isOpen, trader]);
   const handleSubmit = async () => {
     if (!amount || parseFloat(amount) <= 0) {
       alert('Please enter a valid amount');
@@ -582,6 +588,7 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
       await onSubmit(amount, paymentMethod);
       // Reset form
       setAmount('');
+      alert(`${action === 'buy' ? 'Buy' : 'Sell'} request sent to ${trader.name}!`);
     } catch (error) {
       console.error('Amount submit error:', error);
     } finally {
@@ -602,28 +609,26 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
       <div className="amount-input-modal" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="amount-modal-header">
-          <button className="back-btn" onClick={handleClose}>
-            ←
-          </button>
-          <h2>
-            {action === 'buy' ? 'Buy' : 'Sell'} {selectedToken}
-          </h2>
           <button className="close-btn" onClick={handleClose}>
             ✕
           </button>
+          <h2 className="modal-title">
+            {action === 'buy' ? 'Buy' : 'Sell'} {selectedToken}
+          </h2>
         </div>
 
         {/* Trader Info */}
         <div className="trader-info-card">
-          <div className="trader-avatar">
-            <span className="avatar-icon">👤</span>
-          </div>
           <div className="trader-details">
             <h3>{trader.name}</h3>
             <div className="trader-rating">
               <span className="star">⭐</span>
               <span>{trader.rating}</span>
               <span className="trades-count">({trader.totalTrades} trades)</span>
+            </div>
+            <div className={`online-status ${trader.isOnline ? 'online' : 'offline'}`}>
+              <span className="status-dot"></span>
+              {trader.isOnline ? 'Online' : 'Offline'}
             </div>
             <div className="price-display">
               Price: <span className="price-value">₹{trader.price.toFixed(2)}</span>
@@ -633,7 +638,7 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
 
         {/* Amount Input Section */}
         <div className="amount-input-section">
-          <h3>Enter Amount</h3>
+          <h3>Enter Amount (₹)</h3>
           <div className="amount-input-wrapper">
             <span className="currency-symbol">₹</span>
             <input
@@ -644,6 +649,7 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
               className="amount-input-field"
               min={trader.limit.min}
               max={trader.limit.max}
+              autoFocus
             />
           </div>
           
@@ -683,7 +689,7 @@ const AmountInputModal: React.FC<AmountInputModalProps> = ({
 
         {/* Submit Button */}
         <button 
-          className="buy-request-btn"
+          className={`trade-request-btn ${action}`}
           onClick={handleSubmit}
           disabled={isSubmitting || !amount}
         >
