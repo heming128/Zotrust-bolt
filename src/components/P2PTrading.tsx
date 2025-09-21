@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
 import PostAdModal from './PostAdModal';
-import AmountInputModal from './AmountInputModal';
 
 interface MarketData {
   bestBuyPrice: number;
@@ -42,11 +41,6 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   const [showPostAdModal, setShowPostAdModal] = useState(false);
   const [showTokenDropdown, setShowTokenDropdown] = useState(false);
   const [showMarketStats, setShowMarketStats] = useState(false);
-  
-  // Amount Input Modal States
-  const [showAmountModal, setShowAmountModal] = useState(false);
-  const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
-  const [tradeAction, setTradeAction] = useState<'buy' | 'sell'>('buy');
 
   const marketData: MarketData = {
     bestBuyPrice: 87.99,
@@ -135,20 +129,8 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
       return;
     }
     
-    setSelectedTrader(trader);
-    setTradeAction(action);
-    setShowAmountModal(true);
-  };
-
-  const handleTradeSubmit = async (tradeData: any) => {
-    console.log('Trade submitted:', tradeData);
-    
-    // Show success message
-    alert(`Trade request sent successfully!\n\nTrader: ${tradeData.trader.name}\nAmount: ₹${tradeData.amount}\nToken: ${tradeData.token}\nAction: ${tradeData.action.toUpperCase()}`);
-    
-    // Close modal
-    setShowAmountModal(false);
-    setSelectedTrader(null);
+    // Simple alert with trader info
+    alert(`🎯 Trade Request\n\nTrader: ${trader.name}\nAction: ${action.toUpperCase()} ${selectedToken}\nPrice: ₹${trader.price}\nAvailable: ${trader.available} ${selectedToken}\nLimit: ₹${trader.limit.min} - ₹${trader.limit.max}\n\n✅ Trade request would be sent!`);
   };
 
   const handleAdCreated = (newAd: Trader) => {
@@ -314,6 +296,8 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
           <button 
             className={`trade-btn sell-btn ${activeTab === 'sell' ? 'active' : ''}`}
             onClick={() => setActiveTab('sell')}
+          >
+            Sell {selectedToken}
           </button>
         </div>
       </div>
@@ -413,19 +397,6 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
         isOpen={showPostAdModal}
         onClose={() => setShowPostAdModal(false)}
         onAdCreated={handleAdCreated}
-      />
-
-      {/* Amount Input Modal */}
-      <AmountInputModal
-        isOpen={showAmountModal}
-        onClose={() => {
-          setShowAmountModal(false);
-          setSelectedTrader(null);
-        }}
-        onSubmit={handleTradeSubmit}
-        trader={selectedTrader}
-        action={tradeAction}
-        selectedToken={selectedToken}
       />
     </div>
   );
