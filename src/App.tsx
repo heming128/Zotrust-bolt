@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import Dashboard from './components/Dashboard';
+import Trades from './components/Trades';
 import P2PTrading from './components/P2PTrading';
 import Profile from './components/Profile';
 import BottomNavigation from './components/BottomNavigation';
@@ -39,15 +40,10 @@ function App() {
     switch (activeTab) {
       case 'dashboard':
         return <Dashboard />;
+      case 'trades':
+        return <Trades />;
       case 'p2p':
         return <P2PTrading userAds={userAds} onAddUserAd={handleAddUserAd} />;
-      case 'trades':
-        return (
-          <div className="trades-section">
-            <h2>📊 Trading History</h2>
-            <p>Your trading history will appear here</p>
-          </div>
-        );
       case 'wallet':
         return (
           <div className="wallet-section">
