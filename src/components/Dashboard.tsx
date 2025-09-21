@@ -334,13 +334,6 @@ const Dashboard: React.FC = () => {
         )}
       </div>
 
-      {/* City Selection Modal */}
-      <CityModal 
-        isOpen={showCityModal}
-        onClose={() => setShowCityModal(false)}
-        onSelectCity={handleCitySelect}
-      />
-
       {/* Quick Actions Section */}
       <div className="quick-actions-section">
         <h3 className="section-title">Quick Actions</h3>
@@ -378,6 +371,13 @@ const Dashboard: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* City Selection Modal */}
+      <CityModal 
+        isOpen={showCityModal}
+        onClose={() => setShowCityModal(false)}
+        onSelectCity={handleCitySelect}
+      />
     </div>
   );
 };
