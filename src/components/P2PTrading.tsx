@@ -146,8 +146,11 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
   };
 
   const handleTokenSelect = (token: 'USDC' | 'USDT') => {
+    console.log('handleTokenSelect called with:', token);
+    console.log('Current selectedToken:', selectedToken);
     setSelectedToken(token);
     setShowTokenDropdown(false);
+    console.log('Token updated to:', token);
   };
 
   // Close dropdown when clicking outside
@@ -211,6 +214,7 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
               className="token-selector-btn"
               onClick={(e) => {
                 e.stopPropagation();
+               console.log('Token selector clicked, current dropdown state:', showTokenDropdown);
                 setShowTokenDropdown(!showTokenDropdown);
               }}
             >
@@ -223,7 +227,11 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
               <div className="token-dropdown">
                 <div 
                   className={`token-option ${selectedToken === 'USDC' ? 'active' : ''}`}
-                  onClick={() => handleTokenSelect('USDC')}
+                 onClick={(e) => {
+                   e.stopPropagation();
+                   console.log('USDC clicked');
+                   handleTokenSelect('USDC');
+                 }}
                 >
                   <span className="token-icon">🔵</span>
                   <div className="token-details">
@@ -233,7 +241,11 @@ const P2PTrading: React.FC<P2PTradingProps> = ({ userAds = [], onAddUserAd }) =>
                 </div>
                 <div 
                   className={`token-option ${selectedToken === 'USDT' ? 'active' : ''}`}
-                  onClick={() => handleTokenSelect('USDT')}
+                 onClick={(e) => {
+                   e.stopPropagation();
+                   console.log('USDT clicked');
+                   handleTokenSelect('USDT');
+                 }}
                 >
                   <span className="token-icon">🟢</span>
                   <div className="token-details">
