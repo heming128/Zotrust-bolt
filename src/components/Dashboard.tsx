@@ -340,6 +340,26 @@ const Dashboard: React.FC = () => {
         onClose={() => setShowCityModal(false)}
         onSelectCity={handleCitySelect}
       />
+
+      {/* Fixed Bottom Action Buttons */}
+      <div className="dashboard-bottom-actions">
+        <button className="bottom-action-btn p2p-btn">
+          <span className="action-icon">🤝</span>
+          <span className="action-label">P2P</span>
+        </button>
+        <button className="bottom-action-btn trades-btn">
+          <span className="action-icon">📊</span>
+          <span className="action-label">Trades</span>
+        </button>
+        <button className="bottom-action-btn profile-btn">
+          <span className="action-icon">👤</span>
+          <span className="action-label">Profile</span>
+        </button>
+        <button className="bottom-action-btn request-btn">
+          <span className="action-icon">📝</span>
+          <span className="action-label">Request</span>
+        </button>
+      </div>
     </div>
   );
 };
