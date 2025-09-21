@@ -141,6 +141,60 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* USDT Balance Card */}
+      <div style={{
+        backgroundColor: '#00d4aa',
+        borderRadius: '16px',
+        padding: '24px',
+        marginBottom: '20px',
+        color: 'white',
+        position: 'relative'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '16px'
+        }}>
+          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '500' }}>
+            USDT Balance
+          </h3>
+          <button 
+            onClick={refreshTokenBalances}
+            disabled={isLoadingBalances}
+            style={{
+              background: 'rgba(255,255,255,0.2)',
+              border: 'none',
+              borderRadius: '8px',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '16px'
+            }}
+          >
+            {isLoadingBalances ? '⏳' : '🔄'}
+          </button>
+        </div>
+        
+        <div style={{ textAlign: 'left' }}>
+          <div style={{
+            fontSize: '36px',
+            fontWeight: '700',
+            marginBottom: '4px'
+          }}>
+            ${isLoadingBalances ? '0.00' : tokenBalances.USDT}
+          </div>
+          <div style={{
+            fontSize: '16px',
+            opacity: 0.8
+          }}>
+            ≈ ${isLoadingBalances ? '0.00' : (parseFloat(tokenBalances.USDT) * 1.00).toFixed(2)} USD
+          </div>
+        </div>
+      </div>
       {/* Add Your City Card */}
       <div style={{
         backgroundColor: 'white',
