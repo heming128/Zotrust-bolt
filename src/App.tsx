@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import { useWeb3 } from './hooks/useWeb3';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component<
@@ -68,9 +69,6 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-import { useWeb3 } from './hooks/useWeb3';
-import { useDatabase } from './hooks/useDatabase';
-
 // Dashboard Component
 const Dashboard: React.FC = () => {
   const { 
@@ -86,13 +84,17 @@ const Dashboard: React.FC = () => {
     isConnecting,
     chainId
   } = useWeb3();
-  const { getCities } = useDatabase();
   
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [showCityModal, setShowCityModal] = useState(false);
   const [selectedToken, setSelectedToken] = useState<'USDC' | 'USDT'>('USDC');
-  const [cities, setCities] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([
+    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 
+    'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur',
+    'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam', 'Patna'
+  ]);
   const [loadingCities, setLoadingCities] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Load saved city on mount
   React.useEffect(() => {
@@ -133,22 +135,14 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Load cities from database
-  const loadCities = async () => {
-    try {
-      setLoadingCities(true);
-      const dbCities = await getCities();
-      setCities(dbCities.map(city => city.name));
-    } catch (error) {
-      console.error('Error loading cities:', error);
-      // Fallback cities
-      setCities([
-        'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 
-        'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur'
-      ]);
-    } finally {
-      setLoadingCities(false);
-    }
+  // Filter cities based on search
+  const filteredCities = cities.filter(city =>
+    city.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleCityModalOpen = () => {
+    setShowCityModal(true);
+    setSearchTerm('');
   };
 
   const nearbyTraders = [
@@ -276,24 +270,11 @@ const Dashboard: React.FC = () => {
             <span>🏢</span>
             Select City
           </button>
-        </div>
-      ) : (
-        <div className="selected-city-card">
-          <div className="city-info">
-            <div className="city-icon">
-              <span>📍</span>
-            </div>
-            <div className="city-details">
-              <h3>Your City</h3>
-              <p>{selectedCity}</p>
             </div>
           </div>
           <button 
             className="change-city-button"
-            onClick={() => {
-              setShowCityModal(true);
-              loadCities();
-            }}
+            onClick={handleCityModalOpen}
           >
             Change
           </button>
@@ -401,14 +382,44 @@ const Dashboard: React.FC = () => {
                 Choose your city to find nearby traders in your area
               </p>
               
-              {loadingCities ? (
-                <div className="loading-cities">
-                  <div className="loading-spinner">⏳</div>
-                  <p>Loading cities...</p>
+              <div className="search-container">
+                <div className="search-input-wrapper">
+                  <span className="search-icon">🔍</span>
+                  <input
+                    type="text"
+                    placeholder="Search cities..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="city-search-input"
+                  />
+                  {searchTerm && (
+                    <button 
+                      className="clear-search-btn"
+                      onClick={() => setSearchTerm('')}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              {filteredCities.length === 0 ? (
+                <div className="no-results">
+                  <span className="no-results-icon">🏙️</span>
+                  <p>No cities found matching "{searchTerm}"</p>
                 </div>
               ) : (
+                <>
+                  {searchTerm && (
+                    <div className="results-count">
+                      <p className="search-results-text">
+                        Found {filteredCities.length} cities matching "{searchTerm}"
+                      </p>
+                    </div>
+                  )}
+                  
                 <div className="cities-grid">
-                  {cities.map((city) => (
+                  {filteredCities.map((city) => (
                     <button
                       key={city}
                       className="city-option"
@@ -418,6 +429,7 @@ const Dashboard: React.FC = () => {
                     </button>
                   ))}
                 </div>
+                </>
               )}
             </div>
           </div>
